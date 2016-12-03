@@ -1,7 +1,7 @@
 # --- !Ups
 
-create table "USERS" ("id" INTEGER PRIMARY KEY,"userName" VARCHAR NOT NULL,"createdAt" DATETIME NOT NULL);
+create table "users" ("id" INTEGER PRIMARY KEY,"userName" VARCHAR NOT NULL,"createdAt" DATETIME NOT NULL);
 
 # --- !Downs
 
-drop table "USERS";
+drop table "users";
