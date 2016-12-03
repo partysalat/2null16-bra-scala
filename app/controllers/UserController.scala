@@ -9,7 +9,7 @@ import scala.concurrent.duration._
 
 
 @Singleton
-class NewsController @Inject()(actorSystem: ActorSystem)(implicit exec: ExecutionContext) extends Controller {
+class UserController @Inject()(actorSystem: ActorSystem)(implicit exec: ExecutionContext) extends Controller {
 
 
   def message = Action.async {
