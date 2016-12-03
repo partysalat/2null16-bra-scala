@@ -1,0 +1,7 @@
+# --- !Ups
+
+create table "USERS" ("ID" INTEGER PRIMARY KEY,"USER" VARCHAR NOT NULL,"DATE_CREATED" TIMESTAMP NOT NULL, "IMAGE" VARCHAR NOT NULL);
+
+# --- !Downs
+
+drop table "USERS";
