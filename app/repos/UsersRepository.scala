@@ -27,10 +27,8 @@ class UsersRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPr
   }
 }
 
-
-private[repos] trait UsersTable {
+trait BaseTable{
   self: HasDatabaseConfigProvider[JdbcProfile] =>
-
   import driver.api._
 
   implicit def dateTime =
@@ -38,6 +36,11 @@ private[repos] trait UsersTable {
       dateTime => new Date(dateTime.getMillis),
       date => new DateTime(date.getTime)
     )
+}
+
+private[repos] trait UsersTable extends BaseTable {
+  self: HasDatabaseConfigProvider[JdbcProfile] =>
+  import driver.api._
 
   lazy protected val userTableQuery = TableQuery[UsersTable]
   lazy protected val userTableQueryInc = userTableQuery returning userTableQuery.map(_.id)
