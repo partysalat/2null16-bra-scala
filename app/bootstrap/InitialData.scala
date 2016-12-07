@@ -1,11 +1,12 @@
 package bootstrap
 
 import com.google.inject.Inject
-import models.User
+import models.{Achievement, User}
 import org.joda.time.DateTime
 import play.Logger
-import repos.UsersRepository
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import repos.achievements.AchievementsRepository
+import repos.users.UsersRepository
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -13,10 +14,14 @@ import scala.concurrent.duration.Duration
 /**
   * Created by ben on 03/12/2016.
   */
-class InitialData @Inject()(usersRepository: UsersRepository) {
+class InitialData @Inject()(
+                             usersRepository: UsersRepository,
+                             achievementsRepository: AchievementsRepository
+                           ) {
   def insert = for {
     users <- usersRepository.getAll() if users.isEmpty
     _ <- usersRepository.insertAll(Data.users)
+    _ <- achievementsRepository.insertAll(Data.achievements)
 
   } yield {}
 
@@ -35,5 +40,8 @@ object Data {
     User("Ben", DateTime.now()),
     User("Benni", DateTime.now()),
     User("Paul", DateTime.now())
+  )
+  val achievements = List(
+    Achievement("Der frühe Vogel","Früh trinken","Mein Bild", DateTime.now())
   )
 }
