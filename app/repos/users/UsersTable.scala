@@ -16,10 +16,12 @@ private[repos] trait UsersTable extends BaseTable {
   private[UsersTable] class UsersTable(tag: Tag) extends Table[User](tag, "users") {
     val id: Rep[Int] = column[Int]("id", O.AutoInc, O.PrimaryKey)
     val userName: Rep[String] = column[String]("userName", O.SqlType("VARCHAR(200)"))
-    val createdAt: Rep[DateTime] = column[DateTime]("createdAt", O.SqlType("date"))
+    val createdAt: Rep[DateTime] = column[DateTime]("createdAt", O.SqlType("DATETIME"))
+    val updatedAt: Rep[DateTime]  = column[DateTime]("updatedAt", O.SqlType("DATETIME"))
 
 
-    def * = (userName, createdAt, id.?) <> ((User.apply _).tupled, User.unapply)
+
+    def * = (userName, id.?, createdAt,updatedAt) <> ((User.apply _).tupled, User.unapply)
   }
 
 }

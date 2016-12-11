@@ -1,25 +1,57 @@
 package controllers
 
-import akka.actor.ActorSystem
 import javax.inject._
-import play.api._
+
+import akka.actor.ActorSystem
+import models._
+import play.api.Logger
+import play.api.libs.json.{JsError, JsSuccess, Json}
 import play.api.mvc._
-import scala.concurrent.{ExecutionContext, Future, Promise}
-import scala.concurrent.duration._
+import repos.users.UsersRepository
+
+import scala.concurrent.{ExecutionContext, Future}
 
 
 @Singleton
-class UserController @Inject()(actorSystem: ActorSystem)(implicit exec: ExecutionContext) extends Controller {
+class UserController @Inject()(actorSystem: ActorSystem, userRepository: UsersRepository)
+                              (implicit exec: ExecutionContext) extends Controller {
+  val logger:Logger = Logger(this.getClass)
 
-
-  def message = Action.async {
-    getFutureMessage(1.second).map { msg => Ok(msg) }
+  def getUsers = Action.async {
+    userRepository.getAll()
+      .map(users => Ok(Json.toJson(UsersResponse(users))))
+      .recoverWith({
+        case e => Future {
+          logger.error(e.toString)
+          InternalServerError
+        }
+      })
   }
 
-  private def getFutureMessage(delayTime: FiniteDuration): Future[String] = {
-    val promise: Promise[String] = Promise[String]()
-    actorSystem.scheduler.scheduleOnce(delayTime) { promise.success("Hi!") }
-    promise.future
+  def createUser = Action.async(parse.tolerantJson) { request =>
+    val validationResult = request.body.validate[CreateUserDto]
+
+    validationResult match {
+      case e: JsError => Future {
+        BadRequest(e.toString)
+      }
+      case userJson: JsSuccess[CreateUserDto] => {
+        userRepository
+          .insert(User(userJson.get.name))
+          .map(userId => Ok(Json.toJson(CreatedResponse(userId))))
+          .recoverWith({
+            case e => Future {
+              logger.error(e.toString)
+              InternalServerError
+            }
+          })
+      }
+
+    }
+
   }
 
 }
+
+
+

@@ -36,10 +36,10 @@ class InitialData @Inject()(
 
 object Data {
   val users = List(
-    User("Flo", DateTime.now()),
-    User("Ben", DateTime.now()),
-    User("Benni", DateTime.now()),
-    User("Paul", DateTime.now())
+    User("Flo"),
+    User("Ben"),
+    User("Benni"),
+    User("Paul")
   )
   val achievements = List(
     Achievement("Der frühe Vogel","Früh trinken","Mein Bild", DateTime.now())

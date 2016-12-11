@@ -4,9 +4,10 @@ import org.joda.time.DateTime
 
 
 case class Achievement(
-                        achievementName: String,
+                        name: String,
                         description: String,
                         imagePath: String,
+                        id: Option[Int] = None,
                         createdAt: DateTime,
-                        id: Option[Int] = None
+                        updatedAt: DateTime
                       )
