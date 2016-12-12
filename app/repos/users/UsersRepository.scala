@@ -1,8 +1,7 @@
 package repos.users
 
-import javax.inject.Inject
 
-import com.google.inject.Singleton
+import com.google.inject.{Inject, Singleton}
 import models.User
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.driver.JdbcProfile

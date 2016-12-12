@@ -29,15 +29,15 @@ class UserController @Inject()(actorSystem: ActorSystem, userRepository: UsersRe
   }
 
   def createUser = Action.async(parse.tolerantJson) { request =>
-    val validationResult = request.body.validate[CreateUserDto]
-
+    val validationResult = Future{request.body.validate[CreateUserDto]}
     validationResult match {
       case e: JsError => Future {
         BadRequest(e.toString)
       }
       case userJson: JsSuccess[CreateUserDto] => {
+        val user = User(userJson.get.name)
         userRepository
-          .insert(User(userJson.get.name))
+          .insert(user)
           .map(userId => Ok(Json.toJson(CreatedResponse(userId))))
           .recoverWith({
             case e => Future {

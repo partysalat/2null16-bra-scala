@@ -1,11 +1,11 @@
 package bootstrap
 
 import com.google.inject.Inject
-import models.{Achievement, User}
-import org.joda.time.DateTime
+import models.{Achievement, Drink, DrinkType, User}
 import play.Logger
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import repos.achievements.AchievementsRepository
+import repos.drinks.DrinksRepository
 import repos.users.UsersRepository
 
 import scala.concurrent.Await
@@ -16,12 +16,14 @@ import scala.concurrent.duration.Duration
   */
 class InitialData @Inject()(
                              usersRepository: UsersRepository,
-                             achievementsRepository: AchievementsRepository
+                             achievementsRepository: AchievementsRepository,
+                             drinkRepository: DrinksRepository
                            ) {
   def insert = for {
     users <- usersRepository.getAll() if users.isEmpty
     _ <- usersRepository.insertAll(Data.users)
     _ <- achievementsRepository.insertAll(Data.achievements)
+    _ <- drinkRepository.insertAll(Data.drinks)
 
   } yield {}
 
@@ -42,6 +44,9 @@ object Data {
     User("Paul")
   )
   val achievements = List(
-    Achievement("Der frühe Vogel","Früh trinken","Mein Bild", DateTime.now())
+    Achievement("Der frühe Vogel","Früh trinken","Mein Bild")
+  )
+  val drinks = List(
+    Drink("Radeberger",DrinkType.BEER)
   )
 }

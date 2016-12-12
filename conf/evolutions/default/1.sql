@@ -14,6 +14,13 @@ create table "achievements" (
   "description" VARCHAR NOT NULL,
   "createdAt" DATETIME NOT NULL
   );
+create table "drinks" (
+  "id" INTEGER PRIMARY KEY,
+  "name" VARCHAR NOT NULL,
+  "type" VARCHAR NOT NULL,
+  "createdAt" DATETIME NOT NULL,
+  "updatedAt" DATETIME NOT NULL
+  );
 
 # --- !Downs
 

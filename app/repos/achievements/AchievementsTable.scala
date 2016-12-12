@@ -20,9 +20,10 @@ private[repos] trait AchievementsTable extends BaseTable {
     val achievementDescription: Rep[String] = column[String]("description", O.SqlType("VARCHAR(200)"))
     val imagePath: Rep[String] = column[String]("imagePath", O.SqlType("VARCHAR(200)"))
     val createdAt: Rep[DateTime] = column[DateTime]("createdAt", O.SqlType("date"))
+    val updatedAt: Rep[DateTime] = column[DateTime]("updatedAt", O.SqlType("date"))
 
 
-    def * = (achievementName, achievementDescription, imagePath, createdAt, id.?) <> ((Achievement.apply _).tupled, Achievement.unapply)
+    def * = (achievementName, achievementDescription, imagePath, id.?, createdAt, updatedAt) <> ((Achievement.apply _).tupled, Achievement.unapply)
   }
 
 }

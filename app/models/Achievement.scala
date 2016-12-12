@@ -8,6 +8,7 @@ case class Achievement(
                         description: String,
                         imagePath: String,
                         id: Option[Int] = None,
-                        createdAt: DateTime,
-                        updatedAt: DateTime
+                        createdAt: DateTime = DateTime.now(),
+                        updatedAt: DateTime = DateTime.now()
                       )
+
