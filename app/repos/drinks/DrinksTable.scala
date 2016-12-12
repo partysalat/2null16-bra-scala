@@ -17,7 +17,7 @@ private[repos] trait DrinksTable extends BaseTable {
   lazy protected val tableQuery = TableQuery[DrinksTable]
   lazy protected val tableQueryInc = tableQuery returning tableQuery.map(_.id)
 
-  implicit val drinksMapper = MappedColumnType.base[DrinkType, String](
+  implicit lazy val drinksMapper = MappedColumnType.base[DrinkType, String](
     e => e.toString,
     s => DrinkType.withName(s)
   )

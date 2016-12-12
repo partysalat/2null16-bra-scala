@@ -12,7 +12,8 @@ create table "achievements" (
   "name" VARCHAR NOT NULL,
   "imagePath" VARCHAR NOT NULL,
   "description" VARCHAR NOT NULL,
-  "createdAt" DATETIME NOT NULL
+  "createdAt" DATETIME NOT NULL,
+  "updatedAt" DATETIME NOT NULL
   );
 create table "drinks" (
   "id" INTEGER PRIMARY KEY,
@@ -26,6 +27,7 @@ create table "drinks" (
 
 drop table "users";
 drop table "achievements";
+drop table "drinks";
 
 
 

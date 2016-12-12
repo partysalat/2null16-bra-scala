@@ -11,19 +11,16 @@ import repos.users.UsersRepository
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
-/**
-  * Created by ben on 03/12/2016.
-  */
 class InitialData @Inject()(
                              usersRepository: UsersRepository,
                              achievementsRepository: AchievementsRepository,
-                             drinkRepository: DrinksRepository
+                             drinksRepository: DrinksRepository
                            ) {
   def insert = for {
     users <- usersRepository.getAll() if users.isEmpty
     _ <- usersRepository.insertAll(Data.users)
     _ <- achievementsRepository.insertAll(Data.achievements)
-    _ <- drinkRepository.insertAll(Data.drinks)
+    _ <- drinksRepository.insertAll(Data.drinks)
 
   } yield {}
 
