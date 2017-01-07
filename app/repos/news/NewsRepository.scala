@@ -1,7 +1,7 @@
 package repos.news
 
 import com.google.inject.{Inject, Singleton}
-import models.News
+import models.{Drink, News}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import repos.drinks.DrinksTable
 import slick.driver.JdbcProfile

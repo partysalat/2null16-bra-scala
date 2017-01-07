@@ -30,9 +30,9 @@ create table "news" (
   "type" VARCHAR NOT NULL,
   "createdAt" DATETIME NOT NULL,
   "updatedAt" DATETIME NOT NULL,
-  "userId" VARCHAR NOT NULL,
-  "drinkId" VARCHAR NOT NULL,
-  "achievementId" VARCHAR NOT NULL,
+  "userId" VARCHAR,
+  "drinkId" VARCHAR ,
+  "achievementId" VARCHAR,
   FOREIGN KEY(userId) REFERENCES users(id),
   FOREIGN KEY(drinkId) REFERENCES drinks(id),
   FOREIGN KEY(achievementId) REFERENCES achievements(id)

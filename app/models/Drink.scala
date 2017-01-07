@@ -12,7 +12,10 @@ object DrinkType extends Enumeration {
   val SOFTDRINK = Value("SOFTDRINK")
 }
 
-case class Drink(name:String,`type`:DrinkType,
-                 id: Option[Int] = None,
-                 createdAt: DateTime = DateTime.now(),
-                 updatedAt: DateTime = DateTime.now())
+case class Drink(
+                  name: String,
+                  `type`: DrinkType,
+                  id: Option[Int] = None,
+                  createdAt: DateTime = DateTime.now(),
+                  updatedAt: DateTime = DateTime.now()
+                )

@@ -13,7 +13,11 @@ case class News(
                  cardinality: Int,
                  `type`: NewsType,
                  id: Option[Int] = None,
+                 achievementId: Option[Int] = None,
+                 drinkId: Option[Int] = None,
+                 userId: Option[Int] = None,
                  createdAt: DateTime = DateTime.now(),
                  updatedAt: DateTime = DateTime.now()
+
                )
 
