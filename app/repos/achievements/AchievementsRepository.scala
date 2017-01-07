@@ -12,10 +12,10 @@ import scala.concurrent.Future
 class AchievementsRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) extends AchievementsTable with HasDatabaseConfigProvider[JdbcProfile] {
 
   def insert(achievement: Achievement): Future[Int] = db.run {
-    tableQueryInc += achievement
+    achievementsInc += achievement
   }
   def insertAll(achievements: List[Achievement]) = db.run {
-    tableQueryInc ++= achievements
+    achievementsInc ++= achievements
   }
 }
 

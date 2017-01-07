@@ -12,10 +12,10 @@ import scala.concurrent.Future
 class DrinksRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) extends DrinksTable with HasDatabaseConfigProvider[JdbcProfile] {
 
   def insert(item: Drink): Future[Int] = db.run {
-    tableQueryInc += item
+    drinksInc += item
   }
   def insertAll(items: List[Drink]) = db.run {
-    tableQueryInc ++= items
+    drinksInc ++= items
   }
 }
 

@@ -11,8 +11,8 @@ private[repos] trait AchievementsTable extends BaseTable {
 
   import driver.api._
 
-  lazy protected val tableQuery = TableQuery[AchievementsTable]
-  lazy protected val tableQueryInc = tableQuery returning tableQuery.map(_.id)
+  lazy protected val achievements = TableQuery[AchievementsTable]
+  lazy protected val achievementsInc = achievements returning achievements.map(_.id)
 
   private[AchievementsTable] class AchievementsTable(tag: Tag) extends Table[Achievement](tag, "achievements") {
     val id: Rep[Int] = column[Int]("id", O.AutoInc, O.PrimaryKey)

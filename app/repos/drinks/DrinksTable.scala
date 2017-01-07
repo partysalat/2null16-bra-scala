@@ -14,8 +14,8 @@ private[repos] trait DrinksTable extends BaseTable {
 
   import driver.api._
 
-  lazy protected val tableQuery = TableQuery[DrinksTable]
-  lazy protected val tableQueryInc = tableQuery returning tableQuery.map(_.id)
+  lazy protected val drinks = TableQuery[DrinksTable]
+  lazy protected val drinksInc = drinks returning drinks.map(_.id)
 
   implicit lazy val drinksMapper = MappedColumnType.base[DrinkType, String](
     e => e.toString,

@@ -13,8 +13,8 @@ private[repos] trait NewsTable extends BaseTable {
 
   import driver.api._
 
-  lazy protected val tableQuery = TableQuery[NewsTable]
-  lazy protected val tableQueryInc = tableQuery returning tableQuery.map(_.id)
+  lazy protected val news = TableQuery[NewsTable]
+  lazy protected val newsInc = news returning news.map(_.id)
 
   implicit lazy val newsMapper = MappedColumnType.base[NewsType, String](
     e => e.toString,

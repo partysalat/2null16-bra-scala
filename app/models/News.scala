@@ -14,7 +14,6 @@ case class News(
                  `type`: NewsType,
                  id: Option[Int] = None,
                  createdAt: DateTime = DateTime.now(),
-                 updatedAt: DateTime = DateTime.now(),
-
+                 updatedAt: DateTime = DateTime.now()
                )
 

@@ -10,8 +10,8 @@ private[repos] trait UsersTable extends BaseTable {
   self: HasDatabaseConfigProvider[JdbcProfile] =>
   import driver.api._
 
-  lazy protected val userTableQuery = TableQuery[UsersTable]
-  lazy protected val userTableQueryInc = userTableQuery returning userTableQuery.map(_.id)
+  lazy protected val users = TableQuery[UsersTable]
+  lazy protected val userInc = users returning users.map(_.id)
 
   private[UsersTable] class UsersTable(tag: Tag) extends Table[User](tag, "users") {
     val id: Rep[Int] = column[Int]("id", O.AutoInc, O.PrimaryKey)
