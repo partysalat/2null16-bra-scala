@@ -2,7 +2,7 @@
 
 create table "users" (
   "id" INTEGER PRIMARY KEY,
-  "userName" VARCHAR NOT NULL,
+  "name" VARCHAR NOT NULL,
   "createdAt" DATETIME NOT NULL,
   "updatedAt" DATETIME NOT NULL
 );
@@ -15,6 +15,7 @@ create table "achievements" (
   "createdAt" DATETIME NOT NULL,
   "updatedAt" DATETIME NOT NULL
   );
+
 create table "drinks" (
   "id" INTEGER PRIMARY KEY,
   "name" VARCHAR NOT NULL,
@@ -23,11 +24,26 @@ create table "drinks" (
   "updatedAt" DATETIME NOT NULL
   );
 
+create table "news" (
+  "id" INTEGER PRIMARY KEY,
+  "cardinality" INTEGER NOT NULL,
+  "type" VARCHAR NOT NULL,
+  "createdAt" DATETIME NOT NULL,
+  "updatedAt" DATETIME NOT NULL,
+  "userId" VARCHAR NOT NULL,
+  "drinkId" VARCHAR NOT NULL,
+  "achievementId" VARCHAR NOT NULL,
+  FOREIGN KEY(userId) REFERENCES users(id),
+  FOREIGN KEY(drinkId) REFERENCES drinks(id),
+  FOREIGN KEY(achievementId) REFERENCES achievements(id)
+  );
+
 # --- !Downs
 
 drop table "users";
 drop table "achievements";
 drop table "drinks";
+drop table "news";
 
 
 
