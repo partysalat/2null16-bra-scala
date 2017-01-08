@@ -1,6 +1,7 @@
 package models
 
 import org.joda.time.DateTime
+import play.api.libs.json.{Format, Json}
 
 
 case class Achievement(
@@ -11,4 +12,7 @@ case class Achievement(
                         createdAt: DateTime = DateTime.now(),
                         updatedAt: DateTime = DateTime.now()
                       )
+object Achievement {
+  implicit val achievementFormat: Format[Achievement] = Json.format[Achievement]
+}
 

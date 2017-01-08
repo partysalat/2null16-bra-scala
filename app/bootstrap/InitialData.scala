@@ -23,7 +23,7 @@ class InitialData @Inject()(
     _ <- usersRepository.insertAll(Data.users)
     _ <- achievementsRepository.insertAll(Data.achievements)
     _ <- drinksRepository.insertAll(Data.drinks)
-    _ <- newsRepository.insert(Data.news.head)
+    _ <- newsRepository.insertAll(Data.news)
 
   } yield {}
 
@@ -49,5 +49,8 @@ object Data {
   val drinks = List(
     Drink("Radeberger",DrinkType.BEER)
   )
-  val news = List(News(1,NewsType.DRINK,drinkId = Some(1)))
+  val news = List(
+    News(1,NewsType.DRINK,drinkId = Some(1),userId=Some(2)),
+    News(1,NewsType.ACHIEVEMENT,achievementId = Some(1),userId=Some(3))
+  )
 }
