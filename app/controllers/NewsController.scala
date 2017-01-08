@@ -19,8 +19,8 @@ class NewsController @Inject()(actorSystem: ActorSystem, newsRepository: NewsRep
 
   def getNews = Action.async {
     newsRepository.getAllWithJoins()
-      .map((news: List[(News, User, Drink)]) => {
-        val newsItemList = news.map(item => NewsWithItems(item._1, Some(item._2),Some(item._3)))
+      .map((news: List[(News, Option[User], Option[Drink])]) => {
+        val newsItemList = news.map(item => NewsWithItems(item._1, item._2,item._3))
         Ok(Json.toJson(NewsResponse(newsItemList)))
       })
       .recoverWith({
