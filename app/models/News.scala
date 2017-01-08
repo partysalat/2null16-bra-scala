@@ -3,6 +3,8 @@ package models
 import models.NewsType.NewsType
 import org.joda.time.DateTime
 import play.api.libs.json._
+import play.api.libs.functional.syntax._
+
 
 object NewsType extends Enumeration {
   type NewsType = Value
@@ -44,7 +46,13 @@ object UserNews {
 }
 case class NewsWithItems(news:News,user:Option[User], drink:Option[Drink]=None, achievement:Option[Achievement]= None)
 object NewsWithItems {
-  implicit val newsWithItemsFormat: Format[NewsWithItems] = Json.format[NewsWithItems]
+  implicit val newsWithItemsFormat: Reads[NewsWithItems] = Json.reads[NewsWithItems]
+  implicit val newsWithItemsWrites: Writes[NewsWithItems] = (
+    JsPath.write[News] and
+    (JsPath \ "user").write[Option[User]] and
+    (JsPath \ "drink").write[Option[Drink]] and
+    (JsPath \ "achievement").write[Option[Achievement]]
+  )(unlift(NewsWithItems.unapply))
 }
 
 case class NewsResponse(news:List[NewsWithItems])

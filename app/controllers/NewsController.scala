@@ -17,10 +17,10 @@ class NewsController @Inject()(actorSystem: ActorSystem, newsRepository: NewsRep
                               (implicit exec: ExecutionContext) extends Controller {
   val logger: Logger = Logger(this.getClass)
 
-  def getNews = Action.async {
-    newsRepository.getAllWithJoins()
-      .map((news: List[(News, Option[User], Option[Drink])]) => {
-        val newsItemList = news.map(item => NewsWithItems(item._1, item._2,item._3))
+  def getNews(skip:Int) = Action.async {
+    newsRepository.getAll(skip)
+      .map((news: List[(News, Option[User], Option[Drink], Option[Achievement])]) => {
+        val newsItemList = news.map(item => NewsWithItems(item._1, item._2,item._3, item._4))
         Ok(Json.toJson(NewsResponse(newsItemList)))
       })
       .recoverWith({

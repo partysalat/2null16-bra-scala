@@ -14,7 +14,7 @@ import scala.concurrent.Future
 class NewsRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) extends NewsTable with UsersTable with DrinksTable with AchievementsTable with HasDatabaseConfigProvider[JdbcProfile] {
 
   import driver.api._
-
+  val PAGE_SIZE = 10
   def insert(item: News): Future[Int] = db.run {
     newsInc += item
   }
@@ -23,25 +23,12 @@ class NewsRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPro
     newsInc ++= items
   }
 
-  def getAll(): Future[List[News]] = db.run {
-    news.to[List].result
+  def getAll(skip:Int): Future[List[(News, Option[User], Option[Drink], Option[Achievement])]] = db.run {
+    val joinQuery = for {
+      (((newsItem, user),drink),achievement) <- news joinLeft users on (_.userId === _.id) joinLeft drinks on (_._1.drinkId === _.id)  joinLeft achievements on (_._1._1.achievementId === _.id)
+    } yield (newsItem, user, drink, achievement)
 
-
-  }
-
-  def getAllWithJoins(): Future[List[(News, Option[User], Option[Drink])]] = db.run {
-    /*val zipWithJoin = for {
-      newsItem <- news
-      user <- users if newsItem.userId === user.id
-      drink <- drinks if newsItem.drinkId === drink.id
-    } yield (newsItem, user,drink)
-    */
-    val zipWithJoin = for {
-      ((newsItem, user),drink) <- news joinLeft users on (_.userId === _.id) joinLeft drinks on (_._1.drinkId === _.id)
-    } yield (newsItem, user, drink)
-
-    zipWithJoin.to[List].result
-
+    joinQuery.sortBy(_._1.createdAt.desc).drop(skip).take(PAGE_SIZE).to[List].result
   }
 
 }
