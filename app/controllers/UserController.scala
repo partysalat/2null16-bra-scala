@@ -32,7 +32,7 @@ class UserController @Inject()(actorSystem: ActorSystem, userRepository: UsersRe
     val user = User(request.body.name)
     userRepository
       .insert(user)
-      .map(userId => Ok(Json.toJson(CreatedResponse(userId))))
+      .map(id => Ok(Json.toJson(CreatedResponse(id))))
       .recoverWith({
         case e => Future {
           logger.error(e.toString)

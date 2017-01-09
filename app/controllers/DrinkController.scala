@@ -1,5 +1,6 @@
 package controllers
 
+import java.util.NoSuchElementException
 import javax.inject._
 
 import akka.actor.ActorSystem
@@ -10,7 +11,6 @@ import play.api.mvc._
 import repos.drinks.DrinksRepository
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success, Try}
 
 
 @Singleton
@@ -18,22 +18,37 @@ class DrinkController @Inject()(actorSystem: ActorSystem, drinksRepository: Drin
                                (implicit exec: ExecutionContext) extends Controller {
   val logger: Logger = Logger(this.getClass)
 
-  def getDrinks (drinkTypeString:String)= Action.async {
-    Try(DrinkType.withName(drinkTypeString.toUpperCase)) match {
-      case Failure(e) => Future{ BadRequest(e.toString) }
-      case Success(drinkType) => {
-        drinksRepository.getAll(drinkType)
-          .map(drinks => Ok(Json.toJson(DrinkResponse(drinks))))
-          .recoverWith({
-            case e => Future {
-              logger.error(e.toString)
-              InternalServerError
-            }
-          })
-      }
-    }
+  def getDrinks(drinkTypeString: String) = Action.async {
+    Future(DrinkType.withName(drinkTypeString.toUpperCase))
+      .flatMap(drinksRepository.getAll)
+      .map(drinks => Ok(Json.toJson(DrinkResponse(drinks))))
+      .recoverWith({
+        case e: NoSuchElementException => Future {
+          BadRequest(e.toString)
+        }
+        case e => Future {
+          logger.error(e.toString)
+          InternalServerError
+        }
+      })
   }
 
+  def saveDrink(drinkTypeString: String) = Action.async(parse.json[CreateDrinkDto]) { request =>
+    val drinkName = request.body.name
+    Future(DrinkType.withName(drinkTypeString.toUpperCase))
+      .map(Drink(drinkName, _))
+      .flatMap(drinksRepository.insert)
+      .map(id => Ok(Json.toJson(CreatedResponse(id))))
+      .recoverWith({
+        case e: NoSuchElementException => Future {
+          BadRequest(e.toString)
+        }
+        case e => Future {
+          logger.error(e.toString)
+          InternalServerError
+        }
+      })
+  }
 
 }
 
