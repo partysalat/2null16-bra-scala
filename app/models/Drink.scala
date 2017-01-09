@@ -29,3 +29,7 @@ case class Drink(
 object Drink {
   implicit val drinkFormat: Format[Drink] = Json.format[Drink]
 }
+case class DrinkResponse(drinks:List[Drink])
+object DrinkResponse{
+  implicit val drinkResponseJsonFormat: Format[DrinkResponse] = Json.format[DrinkResponse]
+}
