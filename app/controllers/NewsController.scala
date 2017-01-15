@@ -46,6 +46,17 @@ class NewsController @Inject()(actorSystem: ActorSystem, newsRepository: NewsRep
         }
       })
   }
+  def getBestlistNews = Action.async {
+    newsRepository
+      .getStats
+      .map(r =>Ok(Json.toJson(NewsStatsResponse(r))))
+      .recoverWith({
+        case e => Future {
+          logger.error(e.toString)
+          InternalServerError
+        }
+      })
+  }
 
 
 }

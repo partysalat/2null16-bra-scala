@@ -59,3 +59,20 @@ case class NewsResponse(news:List[NewsWithItems])
 object NewsResponse {
   implicit val newsResponseFormat: Format[NewsResponse] = Json.format[NewsResponse]
 }
+
+case class NewsStats(
+  drinkCount:Option[Int],
+  beerCount:Option[Int],
+  cocktailCount:Option[Int],
+  shotCount:Option[Int],
+  coffeeCount:Option[Int],
+  softdrinkCount:Option[Int],
+  user:User
+)
+object NewsStats {
+  implicit val newsStatsFormat: Format[NewsStats] = Json.format[NewsStats]
+}
+case class NewsStatsResponse(bestlist:List[NewsStats])
+object NewsStatsResponse {
+  implicit val newsStatsResponseFormat: Format[NewsStatsResponse] = Json.format[NewsStatsResponse]
+}

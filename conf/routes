@@ -11,6 +11,7 @@ POST        /api/user                     controllers.UserController.createUser
 
 #news
 GET         /api/news/:skip               controllers.NewsController.getNews(skip:Int)
+GET         /api/user/bestlist            controllers.NewsController.getBestlistNews
 POST        /api/drinks                   controllers.NewsController.createDrinkNews
 
 #drink
