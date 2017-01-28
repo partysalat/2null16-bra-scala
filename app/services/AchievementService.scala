@@ -27,7 +27,7 @@ class AchievementService @Inject()(@Named("userAchievementSystem") system: Actor
     system.actorSelection(system / actorId).resolveOne().onComplete({
       case Success(actor) => actor ! "hello"
       case Failure(ex) =>
-        val actor = system.actorOf(Props[UserAchievementActor], name = actorId)
+        val actor = system.actorOf(Props(new UserAchievementActor(news.userId.get)), name = actorId)
         actor ! "hello"
     })
   }
