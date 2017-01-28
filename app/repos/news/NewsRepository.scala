@@ -66,6 +66,28 @@ class NewsRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPro
     db.run(action).map(l => l.to[List])
   }
 
+  def getStatsForUser(userId:Int): Future[NewsStats] = {
+    val action = sql"""
+           SELECT
+             sum(`cardinality`) AS `drinkCount`,
+             sum(CASE WHEN drink.type="BEER" THEN cardinality END) AS `beerCount`,
+             sum(CASE WHEN drink.type="COCKTAIL" THEN cardinality END) AS `cocktailCount`,
+             sum(CASE WHEN drink.type="SHOT" THEN cardinality END) AS `shotCount`,
+             sum(CASE WHEN drink.type="COFFEE" THEN cardinality END) AS `coffeeCount`,
+             sum(CASE WHEN drink.type="SOFTDRINK" THEN cardinality END) AS `softdrinkCount`,
+             `user`.`name` AS `user.name`,
+             `user`.`id` AS `user.id`,
+             `user`.`createdAt` AS `user.createdAt`,
+             `user`.`updatedAt` AS `user.updatedAt`
+           FROM news AS `news`
+           LEFT OUTER JOIN `users` AS `user` ON `news`.`userId` = `user`.`id`
+           LEFT OUTER JOIN `drinks` AS `drink` ON `news`.`drinkId` = `drink`.`id`
+           WHERE `news`.`type` = "DRINK" AND `userId`=${userId.toString};
+      """.as[NewsStats]
+    db.run(action.head)
+
+  }
+
   def getAchievements: Future[List[(News, Option[User], Option[Achievement])]] = db.run {
     val achievementNews = news.filter(_.`newsType` === NewsType.ACHIEVEMENT)
     val joinQuery = for {
