@@ -41,7 +41,9 @@ class NewsRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPro
         news.map(item => NewsWithItems(item._1, item._2, item._3, item._4))
       })
   }
-  implicit val getStatsResult: GetResult[NewsStats] = GetResult(r => NewsStats(r.<<,r.<<,r.<<,r.<<,r.<<,r.<<,User(r.<<,r.<<,LocalDate.fromDateFields(r.nextDate()).toDateTimeAtCurrentTime,LocalDate.fromDateFields(r.nextDate()).toDateTimeAtCurrentTime)))
+
+  implicit val getStatsResult: GetResult[NewsStats] = GetResult(r => NewsStats(r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, User(r.<<, r.<<, LocalDate.fromDateFields(r.nextDate()).toDateTimeAtCurrentTime, LocalDate.fromDateFields(r.nextDate()).toDateTimeAtCurrentTime)))
+
   def getStats: Future[List[NewsStats]] = {
 
     val action = sql"""
@@ -61,9 +63,22 @@ class NewsRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPro
            LEFT OUTER JOIN `drinks` AS `drink` ON `news`.`drinkId` = `drink`.`id`
            WHERE `news`.`type` = "DRINK" GROUP BY `userId` ORDER BY `drinkCount` DESC;
       """.as[NewsStats]
-      db.run(action).map(l=>l.to[List])
+    db.run(action).map(l => l.to[List])
   }
 
+  def getAchievements: Future[List[(News, Option[User], Option[Achievement])]] = db.run {
+    val achievementNews = news.filter(_.`newsType` === NewsType.ACHIEVEMENT)
+    val joinQuery = for {
+      ((newsItem, user), achievements) <- achievementNews joinLeft users on (_.userId === _.id) joinLeft achievements on (_._1.achievementId === _.id)
+    } yield (newsItem, user, achievements)
+
+    joinQuery
+      .to[List]
+      .result
+      .map((news: List[(News, Option[User], Option[Achievement])]) => {
+        news.map(item => item)
+      })
+  }
 }
 
 

@@ -13,12 +13,16 @@ POST        /api/user                     controllers.UserController.createUser
 GET         /api/news/:skip               controllers.NewsController.getNews(skip:Int)
 GET         /api/user/bestlist            controllers.NewsController.getBestlistNews
 POST        /api/drinks                   controllers.NewsController.createDrinkNews
+# TODO: delete news
+
 
 #drink
 GET         /api/drinks/:drinkType        controllers.DrinkController.getDrinks(drinkType:String)
 POST        /api/drinks/:drinkType        controllers.DrinkController.saveDrink(drinkType:String)
 
 
+# achievements
+GET /api/user/achievements                controllers.AchievementController.getAchievements
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file                 controllers.Assets.versioned(path="/public", file: Asset)
 
