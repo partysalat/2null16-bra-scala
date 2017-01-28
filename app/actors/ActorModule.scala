@@ -7,8 +7,6 @@ import com.google.inject.{AbstractModule, Provides}
 class ActorModule extends AbstractModule {
 
   protected def configure: Unit = {
-    bind(classOf[ActorInitializer]).asEagerSingleton()
-
   }
 
   @Provides
