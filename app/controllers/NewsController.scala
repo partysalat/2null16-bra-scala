@@ -8,12 +8,13 @@ import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc._
 import repos.news.NewsRepository
+import services.AchievementService
 
 import scala.concurrent.{ExecutionContext, Future}
 
 
 @Singleton
-class NewsController @Inject()(actorSystem: ActorSystem, newsRepository: NewsRepository)
+class NewsController @Inject()(actorSystem: ActorSystem, newsRepository: NewsRepository, achievementService:AchievementService)
                               (implicit exec: ExecutionContext) extends Controller {
   val logger: Logger = Logger(this.getClass)
 
@@ -33,9 +34,12 @@ class NewsController @Inject()(actorSystem: ActorSystem, newsRepository: NewsRep
 
   def createDrinkNews = Action.async(parse.json[CreateDrinkNewsDto]) { request =>
     val drinkId = request.body.drink
-    val newsList = request.body.users.map(userNews => {
+    val newsList: List[News] = request.body.users.map(userNews => {
       News(userNews.cardinality, NewsType.DRINK, userId = Some(userNews.id), drinkId = Some(drinkId))
     })
+
+    achievementService.notifyAchievements(newsList)
+
     newsRepository
       .insertAll(newsList)
       .map(_ => NoContent)

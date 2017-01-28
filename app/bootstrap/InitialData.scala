@@ -27,6 +27,7 @@ class InitialData @Inject()(
 
   } yield {}
 
+
     try {
       Logger.info("DB initialization.................")
       Await.result(insert, Duration.Inf)
