@@ -79,6 +79,11 @@ class NewsRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPro
         news.map(item => item)
       })
   }
+
+
+  def removeNews(newsId:Int) = db.run {
+    news.filter(_.id === newsId).delete
+  }
 }
 
 

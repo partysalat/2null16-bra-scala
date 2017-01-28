@@ -17,7 +17,7 @@ class NewsController @Inject()(actorSystem: ActorSystem, newsRepository: NewsRep
                               (implicit exec: ExecutionContext) extends Controller {
   val logger: Logger = Logger(this.getClass)
 
-  def getNews(skip:Int) = Action.async {
+  def getNews(skip: Int) = Action.async {
     newsRepository.getAll(skip)
       .map((news: List[NewsWithItems]) => {
         Ok(Json.toJson(NewsResponse(news)))
@@ -46,10 +46,11 @@ class NewsController @Inject()(actorSystem: ActorSystem, newsRepository: NewsRep
         }
       })
   }
+
   def getBestlistNews = Action.async {
     newsRepository
       .getStats
-      .map(r =>Ok(Json.toJson(NewsStatsResponse(r))))
+      .map(r => Ok(Json.toJson(NewsStatsResponse(r))))
       .recoverWith({
         case e => Future {
           logger.error(e.toString)
@@ -58,6 +59,17 @@ class NewsController @Inject()(actorSystem: ActorSystem, newsRepository: NewsRep
       })
   }
 
+  def removeNews(newsId: Int) = Action.async {
+    newsRepository
+      .removeNews(newsId)
+      .map(_ => NoContent)
+      .recoverWith({
+        case e => Future {
+          logger.error(e.toString)
+          InternalServerError
+        }
+      })
+  }
 
 }
 
