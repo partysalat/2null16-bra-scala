@@ -21,6 +21,9 @@ class DrinksRepository @Inject()(protected val dbConfigProvider: DatabaseConfigP
   def getAll(drinkType:DrinkType): Future[List[Drink]] = db.run {
     drinks.filter(_.drinkType === drinkType).to[List].result
   }
+  def getById(id:Int): Future[Drink] = db.run {
+    drinks.filter(_.id === id).result.head
+  }
 }
 
 

@@ -1,16 +1,18 @@
 package actors
 
 import akka.actor.{Actor, Props, Stash}
-import models.{News, NewsStats}
+import models.{DrinkType, News, NewsStats}
 import play.api.Logger
+import repos.achievements.AchievementsRepository
 import repos.drinks.DrinksRepository
 import repos.news.NewsRepository
 
-import scala.concurrent.ExecutionContext
+import scala.collection.mutable
+import scala.concurrent.{ExecutionContext, Future}
 
 object UserAchievementActor {
-  def props(userId: Int, newsRepository: NewsRepository, drinksRepository: DrinksRepository)(implicit executionContext: ExecutionContext) = {
-    Props(new UserAchievementActor(userId, newsRepository, drinksRepository))
+  def props(userId: Int, newsRepository: NewsRepository, drinksRepository: DrinksRepository, achievementsRepository: AchievementsRepository)(implicit executionContext: ExecutionContext) = {
+    Props(new UserAchievementActor(userId, newsRepository, drinksRepository, achievementsRepository))
   }
 
   case class ProcessDrinkNews(news: News)
@@ -18,7 +20,8 @@ object UserAchievementActor {
 }
 
 
-class UserAchievementActor(userId: Int, newsRepository: NewsRepository, drinksRepository: DrinksRepository)(implicit ec: ExecutionContext) extends Actor with Stash {
+class UserAchievementActor(userId: Int, newsRepository: NewsRepository, drinksRepository: DrinksRepository, achievementsRepository: AchievementsRepository)
+                          (implicit ec: ExecutionContext) extends Actor with Stash {
 
   import UserAchievementActor._
 
@@ -43,16 +46,32 @@ class UserAchievementActor(userId: Int, newsRepository: NewsRepository, drinksRe
   def normalReceive: Receive = {
     case ProcessDrinkNews(news) =>
       Logger.info(s"User $userId has drink with id ${news.drinkId}")
-      increaseCounters(news)
-      Logger.info(achievementMetrics.checkAchievements.toString())
+      if (isDrinkNews(news)) {
+        increaseCounters(news).map(_ => achievementMetrics.checkAchievements)
+      }
     case _ => Logger.info("huh?")
   }
 
-  def increaseCounters(news:News) = {
+  def increaseCounters(news: News): Future[Unit] = {
     import Property._
-    achievementMetrics.addValue(List(BEERCOUNT_HIGHER_THAN_5.name),news.cardinality)
+    drinksRepository.getById(news.drinkId.get).map(_.`type`).map {
+      case DrinkType.BEER => achievementMetrics.addValue(beerProperties.keySet.toList, news.cardinality)
+      case DrinkType.COCKTAIL => achievementMetrics.addValue(cocktailProperties.keySet.toList, news.cardinality)
+      case DrinkType.SHOT => achievementMetrics.addValue(shotProperties.keySet.toList, news.cardinality)
+      case DrinkType.SOFTDRINK => achievementMetrics.addValue(softdrinkProperties.keySet.toList, news.cardinality)
+      case _ => ()
+    }
   }
-  def initializeAchievementMetrics = {
+
+  private def isDrinkNews(news: News) = {
+    news.drinkId match {
+      case Some(drinkId) => true
+      case None => false
+    }
+
+  }
+
+  def initializeAchievementMetrics: Future[Unit] = {
     newsRepository
       .getStatsForUser(userId)
       .map(initAchievements)
@@ -60,8 +79,24 @@ class UserAchievementActor(userId: Int, newsRepository: NewsRepository, drinksRe
 
   private def initAchievements(stats: NewsStats) = {
     import Property._
-    achievementMetrics.defineProperty(BEERCOUNT_HIGHER_THAN_5.copy(initialValue = stats.beerCount.getOrElse(0)))
-    achievementMetrics.defineAchievement(Achievement("Lenny", List(BEERCOUNT_HIGHER_THAN_5.name)))
+    initCounter(beerProperties, stats.beerCount.getOrElse(0))
+    initCounter(cocktailProperties, stats.cocktailCount.getOrElse(0))
+    initCounter(shotProperties, stats.shotCount.getOrElse(0))
+    initCounter(softdrinkProperties, stats.softdrinkCount.getOrElse(0))
+
+
+    AchievementDefinitions.achievements
+      .map(_.copy())
+      .foreach(achievementMetrics.defineAchievement)
+    Logger.info(achievementMetrics.checkAchievements.toString())
+
+  }
+
+  private def initCounter(properties: mutable.Map[String, Property], value: Int) = {
+    properties.foreach {
+      case (_, property) => achievementMetrics.defineProperty(property.copy(initialValue = value, value = value))
+    }
+
   }
 
   case class InitializationDone()

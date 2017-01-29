@@ -1,17 +1,19 @@
 package actors
 
+import models.Achievement
+
 import scala.collection.mutable.Map
 
 case class AchievementMetrics(
                                properties: Map[String, Property] = Map(),
-                               achievements: Map[String, Achievement] = Map()
+                               achievements: Map[String, AchievementConstraints] = Map()
                              ) {
   def defineProperty(property: Property) = {
     properties(property.name) = property
   }
 
-  def defineAchievement(achievement: Achievement) = {
-    achievements(achievement.name) = achievement
+  def defineAchievement(achievement: AchievementConstraints) = {
+    achievements(achievement.achievement.name) = achievement
   }
 
   def setValue(propertyName: String, value: Int): Unit = {
@@ -33,11 +35,11 @@ case class AchievementMetrics(
     properties(propertyName).value
   }
 
-  private def unlockAchievement(achievement: Achievement) = {
+  private def unlockAchievement(achievement: AchievementConstraints) = {
     achievement.unlocked = true
   }
 
-  def checkAchievements: List[Achievement] = {
+  def checkAchievements: List[AchievementConstraints] = {
     val unlockedAchievements = achievements
       .toList.map(_._2)
       .filter(!_.unlocked)
@@ -50,8 +52,8 @@ case class AchievementMetrics(
   }
 }
 
-case class Achievement(
-                        name: String,
+case class AchievementConstraints(
+                        achievement:Achievement,
                         props: List[String],
                         var unlocked: Boolean = false
                       )
@@ -61,7 +63,26 @@ object Property {
   val ACTIVE_IF_LESS_THAN = "="
   val ACTIVE_IF_EQUALS_TO = "<"
 
-  val BEERCOUNT_HIGHER_THAN_5 = Property("beerCountHigherThan5", 0, ACTIVE_IF_GREATER_THAN, 5)
+  val BEERCOUNT_HIGHER_THAN_5 = "beerCountHigherThan5"
+  val COCKTAILCOUNT_HIGHER_THAN_5 = "cocktailCountHigherThan5"
+  val SHOTCOUNT_HIGHER_THAN_5 = "shotCountHigherThan5"
+  val SOFTDRINKCOUNT_HIGHER_THAN_5 = "softdrinkCountHigherThan5"
+
+  val beerProperties: Map[String, Property] = Map(
+    BEERCOUNT_HIGHER_THAN_5 -> Property(BEERCOUNT_HIGHER_THAN_5, 0, ACTIVE_IF_GREATER_THAN, 5)
+  )
+
+  val cocktailProperties: Map[String, Property] = Map(
+    COCKTAILCOUNT_HIGHER_THAN_5 -> Property(COCKTAILCOUNT_HIGHER_THAN_5, 0, ACTIVE_IF_GREATER_THAN, 5)
+  )
+
+  val shotProperties: Map[String, Property] = Map(
+    SHOTCOUNT_HIGHER_THAN_5 -> Property(SHOTCOUNT_HIGHER_THAN_5, 0, ACTIVE_IF_GREATER_THAN, 5)
+  )
+
+  val softdrinkProperties: Map[String, Property] = Map(
+    SOFTDRINKCOUNT_HIGHER_THAN_5 -> Property(SOFTDRINKCOUNT_HIGHER_THAN_5, 0, ACTIVE_IF_GREATER_THAN, 5)
+  )
 }
 
 case class Property(
