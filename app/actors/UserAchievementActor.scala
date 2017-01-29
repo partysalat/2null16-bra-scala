@@ -1,13 +1,12 @@
 package actors
 
 import akka.actor.{Actor, Props, Stash}
-import models.DrinkType.DrinkType
-import models.{DrinkType, News}
+import models.{News, NewsStats}
 import play.api.Logger
 import repos.drinks.DrinksRepository
 import repos.news.NewsRepository
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 object UserAchievementActor {
   def props(userId: Int, newsRepository: NewsRepository, drinksRepository: DrinksRepository)(implicit executionContext: ExecutionContext) = {
@@ -44,21 +43,25 @@ class UserAchievementActor(userId: Int, newsRepository: NewsRepository, drinksRe
   def normalReceive: Receive = {
     case ProcessDrinkNews(news) =>
       Logger.info(s"User $userId has drink with id ${news.drinkId}")
+      increaseCounters(news)
+      Logger.info(achievementMetrics.checkAchievements.toString())
     case _ => Logger.info("huh?")
   }
 
+  def increaseCounters(news:News) = {
+    import Property._
+    achievementMetrics.addValue(List(BEERCOUNT_HIGHER_THAN_5.name),news.cardinality)
+  }
   def initializeAchievementMetrics = {
     newsRepository
       .getStatsForUser(userId)
-      .map(stats => {
-        achievementMetrics.userDrinkCount = stats.drinkCount.getOrElse(0)
-        achievementMetrics.drinkTypeCounts(DrinkType.COCKTAIL) = stats.cocktailCount.getOrElse(0)
-        achievementMetrics.drinkTypeCounts(DrinkType.SHOT) = stats.shotCount.getOrElse(0)
-        achievementMetrics.drinkTypeCounts(DrinkType.BEER) = stats.beerCount.getOrElse(0)
-        achievementMetrics.drinkTypeCounts(DrinkType.COFFEE) = stats.coffeeCount.getOrElse(0)
-        achievementMetrics.drinkTypeCounts(DrinkType.SOFTDRINK) = stats.softdrinkCount.getOrElse(0)
-      }
-      )
+      .map(initAchievements)
+  }
+
+  private def initAchievements(stats: NewsStats) = {
+    import Property._
+    achievementMetrics.defineProperty(BEERCOUNT_HIGHER_THAN_5.copy(initialValue = stats.beerCount.getOrElse(0)))
+    achievementMetrics.defineAchievement(Achievement("Lenny", List(BEERCOUNT_HIGHER_THAN_5.name)))
   }
 
   case class InitializationDone()

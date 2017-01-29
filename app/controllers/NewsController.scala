@@ -38,8 +38,8 @@ class NewsController @Inject()(actorSystem: ActorSystem, newsRepository: NewsRep
       News(userNews.cardinality, NewsType.DRINK, userId = Some(userNews.id), drinkId = Some(drinkId))
     })
 
-    achievementService.notifyAchievements(newsList)
 
+    achievementService.notifyAchievements(newsList)
     newsRepository
       .insertAll(newsList)
       .map(_ => NoContent)
