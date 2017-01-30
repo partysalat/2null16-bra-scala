@@ -50,8 +50,5 @@ object Data {
   val drinks = List(
     Drink("Radeberger",DrinkType.BEER)
   )
-  val news = List(
-    News(1,NewsType.DRINK,drinkId = Some(1),userId=Some(2)),
-    News(1,NewsType.ACHIEVEMENT,achievementId = Some(1),userId=Some(3))
-  )
+  val news = List()
 }

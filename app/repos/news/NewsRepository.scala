@@ -42,25 +42,28 @@ class NewsRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPro
       })
   }
 
-  implicit val getStatsResult: GetResult[NewsStats] = GetResult(r => NewsStats(r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, User(r.<<, r.<<, LocalDate.fromDateFields(r.nextDate()).toDateTimeAtCurrentTime, LocalDate.fromDateFields(r.nextDate()).toDateTimeAtCurrentTime)))
+  implicit val getStatsResult: GetResult[NewsStats] = GetResult(r => NewsStats(r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, User(r.<<, r.<<)))
+
+  val selectStats =
+    """
+     SELECT
+       sum(`cardinality`) AS `drinkCount`,
+       sum(CASE WHEN drink.type="BEER" THEN cardinality END) AS `beerCount`,
+       sum(CASE WHEN drink.type="COCKTAIL" THEN cardinality END) AS `cocktailCount`,
+       sum(CASE WHEN drink.type="SHOT" THEN cardinality END) AS `shotCount`,
+       sum(CASE WHEN drink.type="COFFEE" THEN cardinality END) AS `coffeeCount`,
+       sum(CASE WHEN drink.type="SOFTDRINK" THEN cardinality END) AS `softdrinkCount`,
+       `user`.`name` AS `user.name`,
+       `user`.`id` AS `user.id`
+     FROM news AS `news`
+     LEFT OUTER JOIN `users` AS `user` ON `news`.`userId` = `user`.`id`
+     LEFT OUTER JOIN `drinks` AS `drink` ON `news`.`drinkId` = `drink`.`id`
+    """
 
   def getStats: Future[List[NewsStats]] = {
 
     val action = sql"""
-           SELECT
-             sum(`cardinality`) AS `drinkCount`,
-             sum(CASE WHEN drink.type="BEER" THEN cardinality END) AS `beerCount`,
-             sum(CASE WHEN drink.type="COCKTAIL" THEN cardinality END) AS `cocktailCount`,
-             sum(CASE WHEN drink.type="SHOT" THEN cardinality END) AS `shotCount`,
-             sum(CASE WHEN drink.type="COFFEE" THEN cardinality END) AS `coffeeCount`,
-             sum(CASE WHEN drink.type="SOFTDRINK" THEN cardinality END) AS `softdrinkCount`,
-             `user`.`name` AS `user.name`,
-             `user`.`id` AS `user.id`,
-             `user`.`createdAt` AS `user.createdAt`,
-             `user`.`updatedAt` AS `user.updatedAt`
-           FROM news AS `news`
-           LEFT OUTER JOIN `users` AS `user` ON `news`.`userId` = `user`.`id`
-           LEFT OUTER JOIN `drinks` AS `drink` ON `news`.`drinkId` = `drink`.`id`
+           #$selectStats
            WHERE `news`.`type` = "DRINK" GROUP BY `userId` ORDER BY `drinkCount` DESC;
       """.as[NewsStats]
     db.run(action).map(l => l.to[List])
@@ -68,20 +71,7 @@ class NewsRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPro
 
   def getStatsForUser(userId:Int): Future[NewsStats] = {
     val action = sql"""
-           SELECT
-             sum(`cardinality`) AS `drinkCount`,
-             sum(CASE WHEN drink.type="BEER" THEN cardinality END) AS `beerCount`,
-             sum(CASE WHEN drink.type="COCKTAIL" THEN cardinality END) AS `cocktailCount`,
-             sum(CASE WHEN drink.type="SHOT" THEN cardinality END) AS `shotCount`,
-             sum(CASE WHEN drink.type="COFFEE" THEN cardinality END) AS `coffeeCount`,
-             sum(CASE WHEN drink.type="SOFTDRINK" THEN cardinality END) AS `softdrinkCount`,
-             `user`.`name` AS `user.name`,
-             `user`.`id` AS `user.id`,
-             `user`.`createdAt` AS `user.createdAt`,
-             `user`.`updatedAt` AS `user.updatedAt`
-           FROM news AS `news`
-           LEFT OUTER JOIN `users` AS `user` ON `news`.`userId` = `user`.`id`
-           LEFT OUTER JOIN `drinks` AS `drink` ON `news`.`drinkId` = `drink`.`id`
+           #$selectStats
            WHERE `news`.`type` = "DRINK" AND `userId`=${userId.toString};
       """.as[NewsStats]
     db.run(action.head)

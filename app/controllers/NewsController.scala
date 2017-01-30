@@ -38,17 +38,18 @@ class NewsController @Inject()(actorSystem: ActorSystem, newsRepository: NewsRep
       News(userNews.cardinality, NewsType.DRINK, userId = Some(userNews.id), drinkId = Some(drinkId))
     })
 
+    achievementService.notifyAchievements(newsList).flatMap {_=>
+      newsRepository
+        .insertAll(newsList)
+        .map(_ => NoContent)
+        .recoverWith({
+          case e => Future {
+            logger.error(e.toString)
+            InternalServerError
+          }
+        })
+    }
 
-    achievementService.notifyAchievements(newsList)
-    newsRepository
-      .insertAll(newsList)
-      .map(_ => NoContent)
-      .recoverWith({
-        case e => Future {
-          logger.error(e.toString)
-          InternalServerError
-        }
-      })
   }
 
   def getBestlistNews = Action.async {
