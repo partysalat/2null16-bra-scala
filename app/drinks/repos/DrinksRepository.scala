@@ -1,9 +1,8 @@
-package repos.drinks
-
+package drinks.repos
 
 import com.google.inject.{Inject, Singleton}
-import models.Drink
-import models.DrinkType.DrinkType
+import drinks.models.Drink
+import drinks.models.DrinkType.DrinkType
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.driver.JdbcProfile
 

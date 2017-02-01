@@ -4,10 +4,10 @@ import achievements.models.AchievementsResponse
 import com.google.inject.{Inject, Singleton}
 import akka.actor.ActorSystem
 import models._
+import news.repos.NewsRepository
 import play.api.Logger
 import play.api.libs.json._
 import play.api.mvc._
-import repos.news.NewsRepository
 
 import scala.concurrent.{ExecutionContext, Future}
 

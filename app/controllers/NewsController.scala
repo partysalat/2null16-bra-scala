@@ -5,10 +5,11 @@ import javax.inject._
 import achievements.services.AchievementService
 import akka.actor.ActorSystem
 import models._
+import news.models._
+import news.repos.NewsRepository
 import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc._
-import repos.news.NewsRepository
 
 import scala.concurrent.{ExecutionContext, Future}
 

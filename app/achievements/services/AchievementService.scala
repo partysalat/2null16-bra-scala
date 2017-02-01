@@ -9,9 +9,9 @@ import akka.actor.{ActorNotFound, ActorSystem}
 import akka.util.Timeout
 import com.google.inject.name.Named
 import com.google.inject.{Inject, Singleton}
-import models.News
-import repos.drinks.DrinksRepository
-import repos.news.NewsRepository
+import drinks.repos.DrinksRepository
+import news.models.News
+import news.repos.NewsRepository
 
 import scala.concurrent.{ExecutionContext, Future}
 

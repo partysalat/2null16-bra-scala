@@ -7,7 +7,8 @@ import models._
 import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc._
-import repos.users.UsersRepository
+import users.models.{CreateUserDto, CreatedResponse, User, UsersResponse}
+import users.repos.UsersRepository
 
 import scala.concurrent.{ExecutionContext, Future}
 

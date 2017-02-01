@@ -1,8 +1,8 @@
 package achievements.models
 
-import models.User
 import org.joda.time.DateTime
 import play.api.libs.json._
+import users.models.User
 
 
 case class Achievement(

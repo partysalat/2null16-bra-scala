@@ -1,15 +1,16 @@
-package repos.news
+package news.repos
 
 import achievements.models.Achievement
 import achievements.repos.AchievementsTable
 import com.google.inject.{Inject, Singleton}
-import models._
-import org.joda.time.LocalDate
+import drinks.models.Drink
+import drinks.repos.DrinksTable
+import news.models.{News, NewsStats, NewsType, NewsWithItems}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
-import repos.drinks.DrinksTable
-import repos.users.UsersTable
 import slick.driver.JdbcProfile
 import slick.jdbc.GetResult
+import users.models.User
+import users.repos.UsersTable
 
 import scala.concurrent.{ExecutionContext, Future}
 

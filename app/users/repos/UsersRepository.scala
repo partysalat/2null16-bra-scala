@@ -1,10 +1,9 @@
-package repos.users
-
+package users.repos
 
 import com.google.inject.{Inject, Singleton}
-import models.User
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.driver.JdbcProfile
+import users.models.User
 
 import scala.concurrent.Future
 

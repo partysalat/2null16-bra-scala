@@ -1,12 +1,12 @@
-package repos.users
+package users.repos
 
-import models.User
 import org.joda.time.DateTime
 import play.api.db.slick.HasDatabaseConfigProvider
 import repos.BaseTable
 import slick.driver.JdbcProfile
+import users.models.User
 
-private[repos] trait UsersTable extends BaseTable {
+trait UsersTable extends BaseTable {
   self: HasDatabaseConfigProvider[JdbcProfile] =>
   import driver.api._
 

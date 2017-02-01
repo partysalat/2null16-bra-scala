@@ -1,10 +1,12 @@
-package models
+package news.models
 
 import achievements.models.Achievement
-import models.NewsType.NewsType
+import drinks.models.Drink
+import news.models.NewsType.NewsType
 import org.joda.time.DateTime
-import play.api.libs.json._
 import play.api.libs.functional.syntax._
+import play.api.libs.json._
+import users.models.User
 
 
 object NewsType extends Enumeration {

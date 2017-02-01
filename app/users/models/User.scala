@@ -1,4 +1,4 @@
-package models
+package users.models
 
 import org.joda.time.DateTime
 import play.api.libs.json.{Format, Json}

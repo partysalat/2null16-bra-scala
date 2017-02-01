@@ -1,6 +1,6 @@
-package models
+package drinks.models
 
-import models.DrinkType.DrinkType
+import drinks.models.DrinkType.DrinkType
 import org.joda.time.DateTime
 import play.api.libs.json._
 

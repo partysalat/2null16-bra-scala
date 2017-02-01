@@ -1,15 +1,13 @@
-package repos.drinks
+package drinks.repos
 
-import models.DrinkType.DrinkType
-import models.{Drink, DrinkType}
+import drinks.models.DrinkType.DrinkType
+import drinks.models.{Drink, DrinkType}
 import org.joda.time.DateTime
 import play.api.db.slick.HasDatabaseConfigProvider
 import repos.BaseTable
 import slick.driver.JdbcProfile
 
-
-
-private[repos] trait DrinksTable extends BaseTable {
+trait DrinksTable extends BaseTable {
   self: HasDatabaseConfigProvider[JdbcProfile] =>
 
   import driver.api._

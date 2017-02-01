@@ -1,17 +1,17 @@
-package repos.news
+package news.repos
 
-import models.NewsType.NewsType
 import achievements.repos.AchievementsTable
-import models.{Drink, News, NewsType}
+import drinks.repos.DrinksTable
+import news.models.NewsType.NewsType
+import news.models.{News, NewsType}
 import org.joda.time.DateTime
 import play.api.db.slick.HasDatabaseConfigProvider
 import repos.BaseTable
-import repos.drinks.DrinksTable
-import repos.users.UsersTable
 import slick.driver.JdbcProfile
+import users.repos.UsersTable
 
 
-private[repos] trait NewsTable extends BaseTable with DrinksTable with AchievementsTable with UsersTable{
+trait NewsTable extends BaseTable with DrinksTable with AchievementsTable with UsersTable{
   self: HasDatabaseConfigProvider[JdbcProfile] =>
 
   import driver.api._

@@ -4,12 +4,14 @@ import achievements.repos.AchievementsRepository
 import achievements.AchievementDefinitions
 import achievements.models.Achievement
 import com.google.inject.Inject
+import drinks.models.{Drink, DrinkType}
+import drinks.repos.DrinksRepository
 import models._
+import news.repos.NewsRepository
 import play.Logger
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import repos.drinks.DrinksRepository
-import repos.news.NewsRepository
-import repos.users.UsersRepository
+import users.models.User
+import users.repos.UsersRepository
 
 import scala.collection.immutable.Seq
 import scala.concurrent.Await

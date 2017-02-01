@@ -3,10 +3,11 @@ package achievements.actors
 import achievements.AchievementDefinitions
 import achievements.repos.AchievementsRepository
 import akka.actor.{Actor, Props, Stash}
-import models.{DrinkType, News, NewsStats, NewsType}
+import drinks.models.DrinkType
+import drinks.repos.DrinksRepository
+import news.models.{News, NewsStats, NewsType}
+import news.repos.NewsRepository
 import play.api.Logger
-import repos.drinks.DrinksRepository
-import repos.news.NewsRepository
 
 import scala.collection.mutable
 import scala.concurrent.{ExecutionContext, Future}
