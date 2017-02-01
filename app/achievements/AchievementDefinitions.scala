@@ -1,6 +1,8 @@
-package actors
+package achievements
 
-import models.Achievement
+import achievements.actors.AchievementConstraints
+import achievements.actors.Property
+import achievements.models.Achievement
 
 object AchievementDefinitions {
 

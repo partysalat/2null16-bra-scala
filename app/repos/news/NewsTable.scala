@@ -1,11 +1,11 @@
 package repos.news
 
 import models.NewsType.NewsType
+import achievements.repos.AchievementsTable
 import models.{Drink, News, NewsType}
 import org.joda.time.DateTime
 import play.api.db.slick.HasDatabaseConfigProvider
 import repos.BaseTable
-import repos.achievements.AchievementsTable
 import repos.drinks.DrinksTable
 import repos.users.UsersTable
 import slick.driver.JdbcProfile

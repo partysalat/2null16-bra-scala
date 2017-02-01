@@ -1,5 +1,6 @@
 package models
 
+import achievements.models.Achievement
 import models.NewsType.NewsType
 import org.joda.time.DateTime
 import play.api.libs.json._

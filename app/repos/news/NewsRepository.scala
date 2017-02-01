@@ -1,10 +1,11 @@
 package repos.news
 
+import achievements.models.Achievement
+import achievements.repos.AchievementsTable
 import com.google.inject.{Inject, Singleton}
 import models._
 import org.joda.time.LocalDate
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
-import repos.achievements.AchievementsTable
 import repos.drinks.DrinksTable
 import repos.users.UsersTable
 import slick.driver.JdbcProfile

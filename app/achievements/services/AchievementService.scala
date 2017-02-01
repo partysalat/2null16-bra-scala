@@ -1,20 +1,19 @@
-package services
+package achievements.services
 
 import java.util.concurrent.TimeUnit
 
-import actors.UserAchievementActor
-import actors.UserAchievementActor.ProcessDrinkNews
+import achievements.actors.UserAchievementActor
+import achievements.actors.UserAchievementActor.ProcessDrinkNews
+import achievements.repos.AchievementsRepository
 import akka.actor.{ActorNotFound, ActorSystem}
 import akka.util.Timeout
 import com.google.inject.name.Named
 import com.google.inject.{Inject, Singleton}
 import models.News
-import repos.achievements.AchievementsRepository
 import repos.drinks.DrinksRepository
 import repos.news.NewsRepository
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success}
 
 @Singleton
 class AchievementService @Inject()(

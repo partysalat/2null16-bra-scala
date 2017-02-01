@@ -1,9 +1,10 @@
-package actors
+package achievements.actors
 
+import achievements.AchievementDefinitions
+import achievements.repos.AchievementsRepository
 import akka.actor.{Actor, Props, Stash}
 import models.{DrinkType, News, NewsStats, NewsType}
 import play.api.Logger
-import repos.achievements.AchievementsRepository
 import repos.drinks.DrinksRepository
 import repos.news.NewsRepository
 

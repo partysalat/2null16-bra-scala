@@ -1,6 +1,6 @@
-package actors
+package achievements.actors
 
-import models.Achievement
+import achievements.models.Achievement
 
 import scala.collection.mutable.Map
 

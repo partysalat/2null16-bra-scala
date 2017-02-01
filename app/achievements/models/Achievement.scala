@@ -1,5 +1,6 @@
-package models
+package achievements.models
 
+import models.User
 import org.joda.time.DateTime
 import play.api.libs.json._
 

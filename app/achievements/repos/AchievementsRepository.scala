@@ -1,8 +1,7 @@
-package repos.achievements
+package achievements.repos
 
-
+import achievements.models.Achievement
 import com.google.inject.{Inject, Singleton}
-import models.Achievement
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.driver.JdbcProfile
 

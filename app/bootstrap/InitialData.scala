@@ -1,11 +1,12 @@
 package bootstrap
 
-import actors.AchievementDefinitions
+import achievements.repos.AchievementsRepository
+import achievements.AchievementDefinitions
+import achievements.models.Achievement
 import com.google.inject.Inject
 import models._
 import play.Logger
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import repos.achievements.AchievementsRepository
 import repos.drinks.DrinksRepository
 import repos.news.NewsRepository
 import repos.users.UsersRepository

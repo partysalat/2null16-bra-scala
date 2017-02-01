@@ -2,13 +2,13 @@ package controllers
 
 import javax.inject._
 
+import achievements.services.AchievementService
 import akka.actor.ActorSystem
 import models._
 import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc._
 import repos.news.NewsRepository
-import services.AchievementService
 
 import scala.concurrent.{ExecutionContext, Future}
 
