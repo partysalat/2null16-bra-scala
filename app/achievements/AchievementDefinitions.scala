@@ -7,7 +7,7 @@ import achievements.models.Achievement
 object AchievementDefinitions {
 
   import Property._
-  import drinks.models.DrinkType._
+  import actors.AchievementCounterType._
   val achievements = List(
     AchievementConstraints(
       Achievement(
@@ -46,7 +46,7 @@ object AchievementDefinitions {
       Achievement(
         "Barney",
         "25 Cocktails bestellt",
-        "/internal/assets/achievements/barney.jpg"
+        "/internal/assets/achievements/barney.png"
       ),
       List(BEER countHigherOrEqualThan 25)
     )

@@ -11,7 +11,6 @@ import news.repos.NewsRepository
 import play.api.Logger
 import websocket.WebsocketService
 
-import scala.collection.mutable
 import scala.concurrent.{ExecutionContext, Future}
 
 object UserAchievementActor {
@@ -74,6 +73,7 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats, newsRepository: Ne
 
   def increaseCounters(news: News): Future[Unit] = {
     import Property._
+    achievementMetrics.addValue(anyDrinkProperties.keySet.toList, news.cardinality)
     drinksRepository.getById(news.drinkId.get).map(_.`type`).map {
       case DrinkType.BEER => achievementMetrics.addValue(beerProperties.keySet.toList, news.cardinality)
       case DrinkType.COCKTAIL => achievementMetrics.addValue(cocktailProperties.keySet.toList, news.cardinality)
@@ -93,6 +93,7 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats, newsRepository: Ne
 
   def initializeAchievementMetrics: Future[Unit] = {
     import Property._
+    initCounter(anyDrinkProperties, newsStats.drinkCount.getOrElse(0))
     initCounter(beerProperties, newsStats.beerCount.getOrElse(0))
     initCounter(cocktailProperties, newsStats.cocktailCount.getOrElse(0))
     initCounter(shotProperties, newsStats.shotCount.getOrElse(0))
