@@ -1,6 +1,7 @@
 package achievements.actors
 
 import achievements.AchievementDefinitions
+import achievements.models.Achievement
 import achievements.repos.AchievementsRepository
 import akka.actor.{Actor, Props, Stash}
 import drinks.models.DrinkType
@@ -59,15 +60,16 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats, newsRepository: Ne
 
   def addAchievementsToUser(unlockedAchievements: List[AchievementConstraints]) = {
     Logger.info(s"User $userId has unlocked achievements ${unlockedAchievements.toString()}")
-    unlockedAchievements.map { ac =>
-      achievementsRepository
-        .getByName(ac.achievement.name)
-        .flatMap { achievement =>
-          newsRepository.insert(News(1, NewsType.ACHIEVEMENT, userId = Some(userId), achievementId = achievement.id))
-        }
-        .map(newsId => websocketService.notify(Seq(newsId)))
 
-    }
+    achievementsRepository
+      .getByNames(unlockedAchievements.map(_.achievement.name))
+      .flatMap {
+        achievements: List[Achievement] => {
+          val achievementNewsList = achievements.map(achievement => News(1, NewsType.ACHIEVEMENT, userId = Some(userId), achievementId = achievement.id))
+          newsRepository.insertAll(achievementNewsList)
+        }
+      }.map(websocketService.notify)
+
   }
 
   def increaseCounters(news: News): Future[Unit] = {
@@ -105,7 +107,7 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats, newsRepository: Ne
     Future.successful((): Unit)
   }
 
-  private def initCounter(properties: mutable.Map[String, Property], value: Int) = {
+  private def initCounter(properties: Map[String, Property], value: Int) = {
     properties.foreach {
       case (_, property) => achievementMetrics.defineProperty(property.copy(initialValue = value, value = value))
     }

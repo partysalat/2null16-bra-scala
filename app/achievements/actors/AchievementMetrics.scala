@@ -1,6 +1,8 @@
 package achievements.actors
 
 import achievements.models.Achievement
+import drinks.models.DrinkType
+import drinks.models.DrinkType.DrinkType
 
 import scala.collection.mutable.Map
 
@@ -58,31 +60,41 @@ case class AchievementConstraints(
                         var unlocked: Boolean = false
                       )
 
+
 object Property {
+  import scala.collection.immutable.Map
+
+  implicit class HigherThan(drinkType: DrinkType){
+    def countHigherOrEqualThan(count:Int) = {
+      Property.higherThan(drinkType,count)
+    }
+  }
+
   val ACTIVE_IF_GREATER_THAN = ">"
   val ACTIVE_IF_LESS_THAN = "="
   val ACTIVE_IF_EQUALS_TO = "<"
 
-  val BEERCOUNT_HIGHER_THAN_5 = "beerCountHigherThan5"
-  val COCKTAILCOUNT_HIGHER_THAN_5 = "cocktailCountHigherThan5"
-  val SHOTCOUNT_HIGHER_THAN_5 = "shotCountHigherThan5"
-  val SOFTDRINKCOUNT_HIGHER_THAN_5 = "softdrinkCountHigherThan5"
+  def higherThan(drinkType:DrinkType, number:Int)={
+    s"${drinkType.toString}HigherThan$number"
+  }
 
-  val beerProperties: Map[String, Property] = Map(
-    BEERCOUNT_HIGHER_THAN_5 -> Property(BEERCOUNT_HIGHER_THAN_5, 0, ACTIVE_IF_GREATER_THAN, 5)
-  )
+  private def toProperty(tuple2: (String, Int)):(String, Property) = {
+    (tuple2._1,Property(tuple2._1,0,ACTIVE_IF_GREATER_THAN,tuple2._2))
+  }
 
-  val cocktailProperties: Map[String, Property] = Map(
-    COCKTAILCOUNT_HIGHER_THAN_5 -> Property(COCKTAILCOUNT_HIGHER_THAN_5, 0, ACTIVE_IF_GREATER_THAN, 5)
-  )
+  private def rangeToPropertyMap(range: Range,drinkType: DrinkType) ={
+    range.map(count => higherThan(drinkType,count)->count).toMap
+      .map(toProperty)
+  }
 
-  val shotProperties: Map[String, Property] = Map(
-    SHOTCOUNT_HIGHER_THAN_5 -> Property(SHOTCOUNT_HIGHER_THAN_5, 0, ACTIVE_IF_GREATER_THAN, 5)
-  )
+  val beerProperties: Map[String, Property] = rangeToPropertyMap(1 to 25,DrinkType.BEER)
 
-  val softdrinkProperties: Map[String, Property] = Map(
-    SOFTDRINKCOUNT_HIGHER_THAN_5 -> Property(SOFTDRINKCOUNT_HIGHER_THAN_5, 0, ACTIVE_IF_GREATER_THAN, 5)
-  )
+  val cocktailProperties: Map[String, Property] =rangeToPropertyMap(1 to 25,DrinkType.COCKTAIL)
+
+  val shotProperties: Map[String, Property] = rangeToPropertyMap(1 to 25,DrinkType.SHOT)
+
+  val softdrinkProperties: Map[String, Property] = rangeToPropertyMap(1 to 25,DrinkType.SOFTDRINK)
+
 }
 
 case class Property(
@@ -97,8 +109,8 @@ case class Property(
 
   def isActive: Boolean = {
     activation match {
-      case ACTIVE_IF_GREATER_THAN => value > activationValue
-      case ACTIVE_IF_LESS_THAN => value < activationValue
+      case ACTIVE_IF_GREATER_THAN => value >= activationValue
+      case ACTIVE_IF_LESS_THAN => value <= activationValue
       case ACTIVE_IF_EQUALS_TO => value == activationValue
     }
   }
