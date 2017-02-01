@@ -13,7 +13,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 
 @Singleton
-class UserController @Inject()(actorSystem: ActorSystem, userRepository: UsersRepository)
+class UserController @Inject()(userRepository: UsersRepository)
                               (implicit exec: ExecutionContext) extends Controller {
   val logger: Logger = Logger(this.getClass)
 

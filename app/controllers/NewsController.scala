@@ -14,7 +14,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 
 @Singleton
-class NewsController @Inject()(actorSystem: ActorSystem, newsRepository: NewsRepository, achievementService:AchievementService)
+class NewsController @Inject()(@Named("websocketSystem") websocketActorSystem:ActorSystem, newsRepository: NewsRepository, achievementService:AchievementService)
                               (implicit exec: ExecutionContext) extends Controller {
   val logger: Logger = Logger(this.getClass)
 
@@ -41,6 +41,7 @@ class NewsController @Inject()(actorSystem: ActorSystem, newsRepository: NewsRep
     achievementService.notifyAchievements(newsList).flatMap {_=>
       newsRepository
         .insertAll(newsList)
+        .map(_ =>websocketActorSystem)
         .map(_ => NoContent)
         .recoverWith({
           case e => Future {

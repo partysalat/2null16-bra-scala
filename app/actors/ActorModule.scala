@@ -8,6 +8,9 @@ class ActorModule extends AbstractModule {
 
   protected def configure: Unit = {
   }
+  @Provides
+  @Named("websocketSystem")
+  def websocketSystem(): ActorSystem = ActorSystem("websocketSystem")
 
   @Provides
   @Named("userAchievementSystem")

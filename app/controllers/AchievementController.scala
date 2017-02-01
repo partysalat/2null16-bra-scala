@@ -1,6 +1,6 @@
 package controllers
 
-import javax.inject._
+import com.google.inject.{Inject, Singleton}
 
 import akka.actor.ActorSystem
 import models._
