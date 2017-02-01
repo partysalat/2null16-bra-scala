@@ -10,5 +10,6 @@ class WebsocketModule extends AbstractModule {
   }
   @Provides
   @Named("websocketSystem")
-  def websocketSystem(): ActorSystem = ActorSystem("websocketSystem")
+  def websocketSystem(): ActorSystem = ActorSystem("websocketSystemMmmm")
+
 }

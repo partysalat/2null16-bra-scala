@@ -10,9 +10,12 @@ import play.api.libs.streams._
 import play.api.mvc._
 
 @Singleton
-class WebsocketController @Inject()(@Named("websocketSystem")implicit val system: ActorSystem, implicit val materializer: Materializer) {
+class WebsocketController @Inject()(
+                                     @Named("websocketSystem")implicit val system: ActorSystem,
+                                     val manager: WebsocketManager,
+                                     implicit val materializer: Materializer) {
 
   def socket = WebSocket.accept[String, String] { request =>
-    ActorFlow.actorRef(out => WebsocketActor.props(out))
+    ActorFlow.actorRef(out => WebsocketActor.props(manager,out))
   }
 }
