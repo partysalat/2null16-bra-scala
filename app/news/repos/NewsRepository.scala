@@ -95,7 +95,6 @@ class NewsRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPro
   }
 
   def getNewsByIds(ids:Seq[Int]): Future[List[NewsWithItems]] =db.run{
-    //news.filter(_.id inSetBind ids).to[List].result
     val joinQuery = for {
       (((newsItem, user), drink), achievement) <- news.filter(_.id inSetBind ids) joinLeft users on (_.userId === _.id) joinLeft drinks on (_._1.drinkId === _.id) joinLeft achievements on (_._1._1.achievementId === _.id)
     } yield (newsItem, user, drink, achievement)

@@ -31,6 +31,7 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats, newsRepository: Ne
   var achievementMetrics: AchievementMetrics = AchievementMetrics()
 
   override def preStart = {
+    Logger.debug(s"Started Actor with userId $userId")
     initializeAchievementMetrics.onSuccess({
       case _ => self ! InitializationDone
     })
@@ -47,14 +48,13 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats, newsRepository: Ne
   }
 
   def normalReceive: Receive = {
-    case ProcessDrinkNews(news) =>
-      if (isDrinkNews(news)) {
+    case ProcessDrinkNews(news) if news.userId.contains(userId) && news.`type` == NewsType.DRINK =>
+      Logger.debug(s"actor $userId received news $news")
         Logger.info(s"User $userId has drink with id ${news.drinkId}")
         increaseCounters(news)
           .map(_ => achievementMetrics.checkAchievements)
           .map(addAchievementsToUser)
-      }
-    case _ => Logger.info("huh?")
+    case _ => ()
   }
 
   def addAchievementsToUser(unlockedAchievements: List[AchievementConstraints]) = {
@@ -81,14 +81,6 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats, newsRepository: Ne
       case DrinkType.SOFTDRINK => achievementMetrics.addValue(softdrinkProperties.keySet.toList, news.cardinality)
       case _ => ()
     }
-  }
-
-  private def isDrinkNews(news: News) = {
-    news.drinkId match {
-      case Some(_) => true
-      case None => false
-    }
-
   }
 
   def initializeAchievementMetrics: Future[Unit] = {
