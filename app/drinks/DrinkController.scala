@@ -1,4 +1,4 @@
-package controllers
+package drinks
 
 import java.util.NoSuchElementException
 import javax.inject._
@@ -6,7 +6,6 @@ import javax.inject._
 import akka.actor.ActorSystem
 import drinks.models.{CreateDrinkDto, Drink, DrinkResponse, DrinkType}
 import drinks.repos.DrinksRepository
-import models._
 import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc._

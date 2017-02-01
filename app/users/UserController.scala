@@ -1,9 +1,7 @@
-package controllers
+package users
 
 import javax.inject._
 
-import akka.actor.ActorSystem
-import models._
 import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc._

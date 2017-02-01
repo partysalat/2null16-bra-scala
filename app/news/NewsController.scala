@@ -1,10 +1,9 @@
-package controllers
+package news
 
 import javax.inject._
 
 import achievements.services.AchievementService
 import akka.actor.ActorSystem
-import models._
 import news.models._
 import news.repos.NewsRepository
 import play.api.Logger

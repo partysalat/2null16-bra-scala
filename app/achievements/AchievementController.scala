@@ -1,9 +1,8 @@
-package controllers
+package achievements
 
 import achievements.models.AchievementsResponse
-import com.google.inject.{Inject, Singleton}
 import akka.actor.ActorSystem
-import models._
+import com.google.inject.{Inject, Singleton}
 import news.repos.NewsRepository
 import play.api.Logger
 import play.api.libs.json._

@@ -1,31 +1,24 @@
-# Routes
-# This file defines all application routes (Higher priority routes first)
-# ~~~~
-
-# An example controller showing a sample home page
-GET           /                             controllers.HomeController.index
-
 # user
-GET           /api/user                     controllers.UserController.getUsers
-POST          /api/user                     controllers.UserController.createUser
+GET           /api/user                     users.UserController.getUsers
+POST          /api/user                     users.UserController.createUser
 
 #news
-GET           /api/news/:skip               controllers.NewsController.getNews(skip:Int)
-GET           /api/user/bestlist            controllers.NewsController.getBestlistNews
-POST          /api/drinks                   controllers.NewsController.createDrinkNews
-DELETE        /api/news/item/:newsId        controllers.NewsController.removeNews(newsId:Int)
-# TODO: delete news
-
+GET           /api/news/:skip               news.NewsController.getNews(skip:Int)
+GET           /api/user/bestlist            news.NewsController.getBestlistNews
+POST          /api/drinks                   news.NewsController.createDrinkNews
+DELETE        /api/news/item/:newsId        news.NewsController.removeNews(newsId:Int)
 
 #drink
-GET           /api/drinks/:drinkType        controllers.DrinkController.getDrinks(drinkType:String)
-POST          /api/drinks/:drinkType        controllers.DrinkController.saveDrink(drinkType:String)
-
+GET           /api/drinks/:drinkType        drinks.DrinkController.getDrinks(drinkType:String)
+POST          /api/drinks/:drinkType        drinks.DrinkController.saveDrink(drinkType:String)
 
 # achievements
-GET           /api/user/achievements        controllers.AchievementController.getAchievements
+GET           /api/user/achievements        achievements.AchievementController.getAchievements
+
 #Websocket
-GET           /api/socket                   controllers.WebsocketController.socket
-# Map static resources from the /public folder to the /assets URL path
+GET           /api/socket                   websocket.WebsocketController.socket
+
+# views
+GET           /                             common.HomeController.index
 GET           /assets/*file                 controllers.Assets.versioned(path="/public", file: Asset)
 
