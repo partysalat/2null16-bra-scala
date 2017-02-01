@@ -18,8 +18,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class NewsController @Inject()(@Named("websocketSystem") websocketActorSystem:ActorSystem,
                                newsRepository: NewsRepository,
                                achievementService:AchievementService,
-                               websocketService: WebsocketService
-                              )
+                               websocketService: WebsocketService)
                               (implicit exec: ExecutionContext) extends Controller {
   val logger: Logger = Logger(this.getClass)
 
