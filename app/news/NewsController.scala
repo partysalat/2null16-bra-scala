@@ -9,12 +9,17 @@ import news.repos.NewsRepository
 import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc._
+import websocket.WebsocketService
 
 import scala.concurrent.{ExecutionContext, Future}
 
 
 @Singleton
-class NewsController @Inject()(@Named("websocketSystem") websocketActorSystem:ActorSystem, newsRepository: NewsRepository, achievementService:AchievementService)
+class NewsController @Inject()(@Named("websocketSystem") websocketActorSystem:ActorSystem,
+                               newsRepository: NewsRepository,
+                               achievementService:AchievementService,
+                               websocketService: WebsocketService
+                              )
                               (implicit exec: ExecutionContext) extends Controller {
   val logger: Logger = Logger(this.getClass)
 
@@ -41,7 +46,7 @@ class NewsController @Inject()(@Named("websocketSystem") websocketActorSystem:Ac
     achievementService.notifyAchievements(newsList).flatMap {_=>
       newsRepository
         .insertAll(newsList)
-        .map(_ =>websocketActorSystem)
+        .map(websocketService.notify)
         .map(_ => NoContent)
         .recoverWith({
           case e => Future {
