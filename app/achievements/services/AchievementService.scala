@@ -12,6 +12,7 @@ import com.google.inject.{Inject, Singleton}
 import drinks.repos.DrinksRepository
 import news.models.News
 import news.repos.NewsRepository
+import websocket.WebsocketService
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -20,7 +21,8 @@ class AchievementService @Inject()(
                                     @Named("userAchievementSystem") system: ActorSystem,
                                     newsRepository: NewsRepository,
                                     drinksRepository: DrinksRepository,
-                                    achievementsRepository: AchievementsRepository
+                                    achievementsRepository: AchievementsRepository,
+                                    websocketService: WebsocketService
                                   )(implicit ec: ExecutionContext) {
   implicit val timeout = Timeout(20, TimeUnit.SECONDS)
 
@@ -39,7 +41,7 @@ class AchievementService @Inject()(
         case ActorNotFound(_) =>
           newsRepository.getStatsForUser(news.userId.get)
             .map { stats =>
-              val actor = system.actorOf(UserAchievementActor.props(news.userId.get, stats, newsRepository, drinksRepository, achievementsRepository), name = actorId)
+              val actor = system.actorOf(UserAchievementActor.props(news.userId.get, stats, newsRepository, drinksRepository, achievementsRepository,websocketService), name = actorId)
               actor ! message
             }
       })

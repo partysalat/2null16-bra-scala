@@ -8,13 +8,14 @@ import drinks.repos.DrinksRepository
 import news.models.{News, NewsStats, NewsType}
 import news.repos.NewsRepository
 import play.api.Logger
+import websocket.WebsocketService
 
 import scala.collection.mutable
 import scala.concurrent.{ExecutionContext, Future}
 
 object UserAchievementActor {
-  def props(userId: Int, newsStats: NewsStats, newsRepository: NewsRepository, drinksRepository: DrinksRepository, achievementsRepository: AchievementsRepository)(implicit executionContext: ExecutionContext) = {
-    Props(new UserAchievementActor(userId, newsStats, newsRepository, drinksRepository, achievementsRepository))
+  def props(userId: Int, newsStats: NewsStats, newsRepository: NewsRepository, drinksRepository: DrinksRepository, achievementsRepository: AchievementsRepository, websocketService: WebsocketService)(implicit executionContext: ExecutionContext) = {
+    Props(new UserAchievementActor(userId, newsStats, newsRepository, drinksRepository, achievementsRepository, websocketService))
   }
 
   case class ProcessDrinkNews(news: News)
@@ -22,7 +23,7 @@ object UserAchievementActor {
 }
 
 
-class UserAchievementActor(userId: Int, newsStats: NewsStats, newsRepository: NewsRepository, drinksRepository: DrinksRepository, achievementsRepository: AchievementsRepository)
+class UserAchievementActor(userId: Int, newsStats: NewsStats, newsRepository: NewsRepository, drinksRepository: DrinksRepository, achievementsRepository: AchievementsRepository, websocketService: WebsocketService)
                           (implicit ec: ExecutionContext) extends Actor with Stash {
 
   import UserAchievementActor._
@@ -59,9 +60,12 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats, newsRepository: Ne
   def addAchievementsToUser(unlockedAchievements: List[AchievementConstraints]) = {
     Logger.info(s"User $userId has unlocked achievements ${unlockedAchievements.toString()}")
     unlockedAchievements.map { ac =>
-      achievementsRepository.getByName(ac.achievement.name).flatMap { achievement =>
-        newsRepository.insert(News(1, NewsType.ACHIEVEMENT, userId = Some(userId), achievementId = achievement.id))
-      }
+      achievementsRepository
+        .getByName(ac.achievement.name)
+        .flatMap { achievement =>
+          newsRepository.insert(News(1, NewsType.ACHIEVEMENT, userId = Some(userId), achievementId = achievement.id))
+        }
+        .map(newsId => websocketService.notify(Seq(newsId)))
 
     }
   }
@@ -98,7 +102,7 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats, newsRepository: Ne
       .foreach(achievementMetrics.defineAchievement)
     val previousAchievements = achievementMetrics.checkAchievements
     Logger.debug(s"Initial unlocked achievements: ${previousAchievements.toString()}")
-    Future.successful(():Unit)
+    Future.successful((): Unit)
   }
 
   private def initCounter(properties: mutable.Map[String, Property], value: Int) = {
