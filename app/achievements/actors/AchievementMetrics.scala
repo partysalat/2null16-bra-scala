@@ -94,7 +94,7 @@ object Property {
       .map(toProperty)
   }
 
-  val anyDrinkProperties: Map[String, Property] = rangeToPropertyMap(1 to 200 by 10,AchievementCounterType.ALL_DRINK)
+  val anyDrinkProperties: Map[String, Property] = rangeToPropertyMap(25 to 200 by 25,AchievementCounterType.ALL_DRINK)
 
   val beerProperties: Map[String, Property] = rangeToPropertyMap(1 to 25,AchievementCounterType.BEER)
 

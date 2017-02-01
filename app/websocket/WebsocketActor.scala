@@ -24,6 +24,6 @@ class WebsocketActor(manager: WebsocketManager,out: ActorRef) extends Actor {
     case NotifyNews(newsWithItems)=>
       out ! Json.toJson(Json.arr("news",newsWithItems)).toString()
     case msg: String =>
-      out ! ("I received your message: " + msg)
+      out ! "4"
   }
 }
