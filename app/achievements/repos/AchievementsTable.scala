@@ -1,9 +1,9 @@
 package achievements.repos
 
 import achievements.models.Achievement
+import common.BaseTable
 import org.joda.time.DateTime
 import play.api.db.slick.HasDatabaseConfigProvider
-import repos.BaseTable
 import slick.driver.JdbcProfile
 
 trait AchievementsTable extends BaseTable {

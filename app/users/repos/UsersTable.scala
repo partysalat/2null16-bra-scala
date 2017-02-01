@@ -1,8 +1,8 @@
 package users.repos
 
+import common.BaseTable
 import org.joda.time.DateTime
 import play.api.db.slick.HasDatabaseConfigProvider
-import repos.BaseTable
 import slick.driver.JdbcProfile
 import users.models.User
 

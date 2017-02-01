@@ -1,10 +1,10 @@
 package drinks.repos
 
+import common.BaseTable
 import drinks.models.DrinkType.DrinkType
 import drinks.models.{Drink, DrinkType}
 import org.joda.time.DateTime
 import play.api.db.slick.HasDatabaseConfigProvider
-import repos.BaseTable
 import slick.driver.JdbcProfile
 
 trait DrinksTable extends BaseTable {

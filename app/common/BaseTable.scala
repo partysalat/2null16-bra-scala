@@ -1,4 +1,5 @@
-package repos
+package common
+
 import java.sql.Date
 
 import org.joda.time.DateTime
