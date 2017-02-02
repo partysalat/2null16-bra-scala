@@ -74,7 +74,7 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats, newsRepository: Ne
 
   def increaseCounters(news: News): Future[Unit] = {
     import Property._
-    achievementMetrics.addValue(anyDrinkProperties.keySet.toList, news.cardinality)
+    achievementMetrics.addValue(drinkCountProperties.keySet.toList, news.cardinality)
     drinksRepository.getById(news.drinkId.get).map(_.`type`).map {
       case DrinkType.BEER => achievementMetrics.addValue(beerProperties.keySet.toList, news.cardinality)
       case DrinkType.COCKTAIL => achievementMetrics.addValue(cocktailProperties.keySet.toList, news.cardinality)
@@ -91,7 +91,7 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats, newsRepository: Ne
       .map(_.copy())
       .foreach(achievementMetrics.defineAchievement)
 
-    initCounter(anyDrinkProperties, newsStats.drinkCount.getOrElse(0))
+    initCounter(drinkCountProperties, newsStats.drinkCount.getOrElse(0))
     initCounter(beerProperties, newsStats.beerCount.getOrElse(0))
     initCounter(cocktailProperties, newsStats.cocktailCount.getOrElse(0))
     initCounter(shotProperties, newsStats.shotCount.getOrElse(0))

@@ -2,6 +2,7 @@ package achievements.actors
 
 import achievements.actors.AchievementCounterType.AchievementCounterType
 import achievements.models.Achievement
+import play.api.Logger
 
 import scala.collection.mutable
 import scala.collection.mutable.Map
@@ -86,11 +87,12 @@ object Property {
   def countHigherThanOrEqual(drinkType:AchievementCounterType, number:Int)={
     val counterName = s"${drinkType.toString}HigherThan$number"
     drinkType match {
-      case AchievementCounterType.DRINK_COUNT => anyDrinkProperties(counterName) = toProperty(counterName,number)
+      case AchievementCounterType.DRINK_COUNT => drinkCountProperties(counterName) = toProperty(counterName,number)
       case AchievementCounterType.BEER => beerProperties(counterName) = toProperty(counterName,number)
       case AchievementCounterType.COCKTAIL => cocktailProperties(counterName) = toProperty(counterName,number)
       case AchievementCounterType.SOFTDRINK => softdrinkProperties(counterName) = toProperty(counterName,number)
       case AchievementCounterType.SHOT => shotProperties(counterName) = toProperty(counterName,number)
+      case _ => Logger.warn(s"No property map defined for $drinkType")
     }
     counterName
   }
@@ -99,14 +101,10 @@ object Property {
     Property(counterName,0,ACTIVE_IF_GREATER_THAN,activationCount)
   }
 
-  val anyDrinkProperties: mutable.Map[String, Property] = mutable.Map()
-
+  val drinkCountProperties: mutable.Map[String, Property] = mutable.Map()
   val beerProperties: mutable.Map[String, Property] = mutable.Map()
-
   val cocktailProperties: mutable.Map[String, Property] =mutable.Map()
-
   val shotProperties: mutable.Map[String, Property] = mutable.Map()
-
   val softdrinkProperties: mutable.Map[String, Property] = mutable.Map()
 
 }
