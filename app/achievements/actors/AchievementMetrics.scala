@@ -3,6 +3,7 @@ package achievements.actors
 import achievements.actors.AchievementCounterType.AchievementCounterType
 import achievements.models.Achievement
 
+import scala.collection.mutable
 import scala.collection.mutable.Map
 
 case class AchievementMetrics(
@@ -69,11 +70,10 @@ object AchievementCounterType extends Enumeration {
 }
 
 object Property {
-  import scala.collection.immutable.Map
 
   implicit class HigherThan(drinkType: AchievementCounterType){
     def countHigherOrEqualThan(count:Int) = {
-      Property.higherThan(drinkType,count)
+      Property.countHigherThanOrEqual(drinkType,count)
     }
   }
 
@@ -81,28 +81,32 @@ object Property {
   val ACTIVE_IF_LESS_THAN = "="
   val ACTIVE_IF_EQUALS_TO = "<"
 
-  def higherThan(drinkType:AchievementCounterType, number:Int)={
-    s"${drinkType.toString}HigherThan$number"
+
+  def countHigherThanOrEqual(drinkType:AchievementCounterType, number:Int)={
+    val counterName = s"${drinkType.toString}HigherThan$number"
+    drinkType match {
+      case AchievementCounterType.ALL_DRINK => anyDrinkProperties(counterName) = toProperty(counterName,number)
+      case AchievementCounterType.BEER => beerProperties(counterName) = toProperty(counterName,number)
+      case AchievementCounterType.COCKTAIL => cocktailProperties(counterName) = toProperty(counterName,number)
+      case AchievementCounterType.SOFTDRINK => softdrinkProperties(counterName) = toProperty(counterName,number)
+      case AchievementCounterType.SHOT => shotProperties(counterName) = toProperty(counterName,number)
+    }
+    counterName
   }
 
-  private def toProperty(tuple2: (String, Int)):(String, Property) = {
-    (tuple2._1,Property(tuple2._1,0,ACTIVE_IF_GREATER_THAN,tuple2._2))
+  private def toProperty(counterName: String,activationCount: Int):Property = {
+    Property(counterName,0,ACTIVE_IF_GREATER_THAN,activationCount)
   }
 
-  private def rangeToPropertyMap(range: Range,drinkType: AchievementCounterType) ={
-    range.map(count => higherThan(drinkType,count)->count).toMap
-      .map(toProperty)
-  }
+  val anyDrinkProperties: mutable.Map[String, Property] = mutable.Map()
 
-  val anyDrinkProperties: Map[String, Property] = rangeToPropertyMap(25 to 200 by 25,AchievementCounterType.ALL_DRINK)
+  val beerProperties: mutable.Map[String, Property] = mutable.Map()
 
-  val beerProperties: Map[String, Property] = rangeToPropertyMap(1 to 25,AchievementCounterType.BEER)
+  val cocktailProperties: mutable.Map[String, Property] =mutable.Map()
 
-  val cocktailProperties: Map[String, Property] =rangeToPropertyMap(1 to 25,AchievementCounterType.COCKTAIL)
+  val shotProperties: mutable.Map[String, Property] = mutable.Map()
 
-  val shotProperties: Map[String, Property] = rangeToPropertyMap(1 to 25,AchievementCounterType.SHOT)
-
-  val softdrinkProperties: Map[String, Property] = rangeToPropertyMap(1 to 25,AchievementCounterType.SOFTDRINK)
+  val softdrinkProperties: mutable.Map[String, Property] = mutable.Map()
 
 }
 

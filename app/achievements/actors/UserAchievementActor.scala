@@ -27,6 +27,7 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats, newsRepository: Ne
                           (implicit ec: ExecutionContext) extends Actor with Stash {
 
   import UserAchievementActor._
+  import scala.collection.mutable
 
   var achievementMetrics: AchievementMetrics = AchievementMetrics()
 
@@ -85,22 +86,23 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats, newsRepository: Ne
 
   def initializeAchievementMetrics: Future[Unit] = {
     import Property._
+
+    AchievementDefinitions.achievements
+      .map(_.copy())
+      .foreach(achievementMetrics.defineAchievement)
+
     initCounter(anyDrinkProperties, newsStats.drinkCount.getOrElse(0))
     initCounter(beerProperties, newsStats.beerCount.getOrElse(0))
     initCounter(cocktailProperties, newsStats.cocktailCount.getOrElse(0))
     initCounter(shotProperties, newsStats.shotCount.getOrElse(0))
     initCounter(softdrinkProperties, newsStats.softdrinkCount.getOrElse(0))
 
-
-    AchievementDefinitions.achievements
-      .map(_.copy())
-      .foreach(achievementMetrics.defineAchievement)
     val previousAchievements = achievementMetrics.checkAchievements
     Logger.debug(s"Initial unlocked achievements: ${previousAchievements.toString()}")
     Future.successful((): Unit)
   }
 
-  private def initCounter(properties: Map[String, Property], value: Int) = {
+  private def initCounter(properties: mutable.Map[String, Property], value: Int) = {
     properties.foreach {
       case (_, property) => achievementMetrics.defineProperty(property.copy(initialValue = value, value = value))
     }
