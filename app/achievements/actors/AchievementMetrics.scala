@@ -88,10 +88,9 @@ object Property {
   val ACTIVE_IF_LESS_THAN = "="
   val ACTIVE_IF_EQUALS_TO = "<"
 
-
-  def countHigherThanOrEqual(drinkType:AchievementCounterType, number:Int)={
-    val counterName = s"${drinkType.toString}HigherThan$number"
-    countProperties(drinkType)(counterName) = toProperty(counterName,number)
+  def countHigherThanOrEqual(counterType:AchievementCounterType, number:Int)={
+    val counterName = s"${counterType.toString}HigherThan$number"
+    countProperties(counterType)(counterName) = toProperty(counterName,number)
     counterName
   }
 
@@ -99,8 +98,6 @@ object Property {
     Property(counterName,0,ACTIVE_IF_GREATER_THAN,activationCount)
   }
 
-
- // val tmp: Set[(AchievementCounterType, mutable.Map[String, Property])] = AchievementCounterType.values.map(counterType => (counterType,mutable.Map[String,Property]()))
   val countProperties: mutable.Map[AchievementCounterType.Value, mutable.Map[String, Property]] = initPropertyCount
 
   def initPropertyCount:mutable.Map[AchievementCounterType.Value, mutable.Map[String, Property]]= {
