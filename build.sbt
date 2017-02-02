@@ -10,11 +10,10 @@ libraryDependencies ++= Seq(
   cache,
   ws,
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test,
-  "org.xerial" % "sqlite-jdbc" % "3.8.6"
+  "org.xerial" % "sqlite-jdbc" % "3.16.1"
 )
 
 libraryDependencies ++= Seq(
-  "com.typesafe.play" %% "play-slick" % "2.0.0",
-  "com.typesafe.play" %% "play-slick-evolutions" % "2.0.0"
+  "com.typesafe.play" %% "play-slick" % "2.0.2",
+  "com.typesafe.play" %% "play-slick-evolutions" % "2.0.2"
 )
-
