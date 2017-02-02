@@ -41,10 +41,12 @@ class AchievementService @Inject()(
     system.actorSelection(system / actorId).resolveOne()
       .recoverWith({
         case ActorNotFound(_) =>
-          newsRepository.getStatsForUser(news.userId.get)
-            .map { stats =>
-              system.actorOf(UserAchievementActor.props(news.userId.get, stats, newsRepository, drinksRepository, achievementsRepository, websocketService), name = actorId)
-            }
+          val statsForUserFut = newsRepository.getStatsForUser(news.userId.get)
+          val statsForAllFut =   newsRepository.getStatsForAll
+          for {
+            statsForUser <- statsForUserFut
+            statsForAll <- statsForAllFut
+          } yield system.actorOf(UserAchievementActor.props(news.userId.get, statsForUser,statsForAll, newsRepository, drinksRepository, achievementsRepository, websocketService), name = actorId)
       })
 
   }

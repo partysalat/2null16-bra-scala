@@ -22,6 +22,9 @@ class AchievementsRepository @Inject()(protected val dbConfigProvider: DatabaseC
   def getByNames(names:Seq[String]): Future[List[Achievement]] = db.run {
     achievements.filter(_.achievementName inSetBind names).to[List].result
   }
+  def getAll: Future[List[Achievement]] = db.run {
+    achievements.to[List].result
+  }
 }
 
 

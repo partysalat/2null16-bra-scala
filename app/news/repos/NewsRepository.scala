@@ -70,6 +70,13 @@ class NewsRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPro
       """.as[NewsStats]
     db.run(action).map(l => l.to[List])
   }
+  def getStatsForAll:Future[NewsStats] = {
+    val action = sql"""
+           #$selectStats
+           WHERE `news`.`type` = "DRINK";
+      """.as[NewsStats]
+    db.run(action.head)
+  }
 
   def getStatsForUser(userId:Int): Future[NewsStats] = {
     val action = sql"""

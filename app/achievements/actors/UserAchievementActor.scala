@@ -15,8 +15,8 @@ import websocket.WebsocketService
 import scala.concurrent.{ExecutionContext, Future}
 
 object UserAchievementActor {
-  def props(userId: Int, newsStats: NewsStats, newsRepository: NewsRepository, drinksRepository: DrinksRepository, achievementsRepository: AchievementsRepository, websocketService: WebsocketService)(implicit executionContext: ExecutionContext) = {
-    Props(new UserAchievementActor(userId, newsStats, newsRepository, drinksRepository, achievementsRepository, websocketService))
+  def props(userId: Int, newsStats: NewsStats, statsForAll: NewsStats, newsRepository: NewsRepository, drinksRepository: DrinksRepository, achievementsRepository: AchievementsRepository, websocketService: WebsocketService)(implicit executionContext: ExecutionContext) = {
+    Props(new UserAchievementActor(userId, newsStats,statsForAll, newsRepository, drinksRepository, achievementsRepository, websocketService))
   }
 
   case class ProcessDrinkNews(news: News)
@@ -24,7 +24,7 @@ object UserAchievementActor {
 }
 
 
-class UserAchievementActor(userId: Int, newsStats: NewsStats, newsRepository: NewsRepository, drinksRepository: DrinksRepository, achievementsRepository: AchievementsRepository, websocketService: WebsocketService)
+class UserAchievementActor(userId: Int, newsStats: NewsStats,statsForAll:NewsStats, newsRepository: NewsRepository, drinksRepository: DrinksRepository, achievementsRepository: AchievementsRepository, websocketService: WebsocketService)
                           (implicit ec: ExecutionContext) extends Actor with Stash {
 
   import UserAchievementActor._
