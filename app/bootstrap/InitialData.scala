@@ -97,7 +97,6 @@ object Data {
   val drinks = List(
     Drink("Radeberger", BEER),
     Drink("Hasseröder", BEER),
-    Drink("Brennst Schwarzbier", BEER),
     Drink("Bitburger", BEER),
     Drink("Lübzer Lemon", BEER),
     Drink("Franziskaner", BEER),

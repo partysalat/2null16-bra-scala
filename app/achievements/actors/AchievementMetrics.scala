@@ -61,7 +61,8 @@ case class AchievementConstraints(
                       )
 object AchievementCounterType extends Enumeration {
   type AchievementCounterType = Value
-  val ALL_DRINK = Value("ALL_DRINK")
+  //user specific metrics
+  val DRINK_COUNT = Value("ALL_DRINK")
   val BEER = Value("BEER")
   val COCKTAIL = Value("COCKTAIL")
   val SHOT = Value("SHOT")
@@ -85,7 +86,7 @@ object Property {
   def countHigherThanOrEqual(drinkType:AchievementCounterType, number:Int)={
     val counterName = s"${drinkType.toString}HigherThan$number"
     drinkType match {
-      case AchievementCounterType.ALL_DRINK => anyDrinkProperties(counterName) = toProperty(counterName,number)
+      case AchievementCounterType.DRINK_COUNT => anyDrinkProperties(counterName) = toProperty(counterName,number)
       case AchievementCounterType.BEER => beerProperties(counterName) = toProperty(counterName,number)
       case AchievementCounterType.COCKTAIL => cocktailProperties(counterName) = toProperty(counterName,number)
       case AchievementCounterType.SOFTDRINK => softdrinkProperties(counterName) = toProperty(counterName,number)
