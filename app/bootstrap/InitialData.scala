@@ -102,7 +102,6 @@ object Data {
     Drink("Lübzer Lemon", BEER),
     Drink("Franziskaner", BEER),
     Drink("Berliner Weiße", BEER),
-    Drink("Berliner Weiße", BEER),
     Drink("Bananenweizen", BEER),
     Drink("Warsteiner", BEER),
 
