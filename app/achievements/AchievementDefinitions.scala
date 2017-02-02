@@ -8,7 +8,11 @@ object AchievementDefinitions {
 
   import Property._
   import actors.AchievementCounterType._
+
   val achievements = List(
+    /**
+      * Beer
+      */
     AchievementConstraints(
       Achievement(
         "Moe",
@@ -51,13 +55,120 @@ object AchievementDefinitions {
       List(BEER countHigherOrEqualThan 25)
     ),
 
+    /**
+      * Cocktails
+      */
+
+    AchievementConstraints(
+      Achievement(
+        "Jeff Lebowski",
+        "1 Cocktails bestellt",
+        "/internal/assets/achievements/derdude.jpg"
+      ),
+      List(COCKTAIL countHigherOrEqualThan 1)
+    ),
     AchievementConstraints(
       Achievement(
         "Hemingway",
-        "1 Cocktails bestellt",
-        "/internal/assets/achievements/barney.png"
+        "5 Cocktails bestellt",
+        "/internal/assets/achievements/hemingway.jpg"
       ),
-      List(COCKTAIL countHigherOrEqualThan 1)
+      List(COCKTAIL countHigherOrEqualThan 5)
+    ),
+    AchievementConstraints(
+      Achievement(
+        "Churchill",
+        "10 Cocktails bestellt",
+        "/internal/assets/achievements/churchill.jpg"
+      ),
+      List(COCKTAIL countHigherOrEqualThan 10)
+    ),
+    AchievementConstraints(
+      Achievement(
+        "George R.R. Martin",
+        "15 Cocktails bestellt",
+        "/internal/assets/achievements/georgerrmartin.jpg"
+      ),
+      List(COCKTAIL countHigherOrEqualThan 15)
+    ),
+
+    /**
+      * Softdrinks
+      */
+    AchievementConstraints(
+      Achievement(
+        "Is this just Fanta Sea?",
+        "Mindestens 5 Softdrinks bestellt",
+        "/internal/assets/achievements/fantaSea.jpg"
+      ),
+      List(SOFTDRINK countHigherOrEqualThan 5)
+    ),
+    AchievementConstraints(
+      Achievement(
+        "Coca Cola Fanta Sprite",
+        "Mindestens 10 Softdrinks bestellt",
+        "/internal/assets/achievements/cocacolaFantaSprite.jpg"
+      ),
+      List(SOFTDRINK countHigherOrEqualThan 10)
+    ),
+
+    /**
+      * Shotrunden
+      */
+
+    //Die nächste Runde geht auf mich
+    //'ne Runde für alle!
+
+    /**
+      * Timing
+      */
+    //Der frühe Vogel trinkt Bier
+    // Der abend kann kommen
+    //Einer der letzten Kunden
+
+    /**
+      * Einmalig
+      */
+    //glueckspils
+    // es geht seinen gang
+    // Veni Vidi Bieri
+    // Halbzeit
+    // This is Sparta
+    /**
+      * Mix
+      */
+    AchievementConstraints(
+      Achievement(
+        "Rauf und runter",
+        "Jeweils ein Bier, Shot und Cocktail bestellt",
+        "/internal/assets/achievements/raufUndRunter.jpg"
+      ),
+      List(BEER countHigherOrEqualThan 1, SHOT countHigherOrEqualThan 1, COCKTAIL countHigherOrEqualThan 1)
+    ),
+    AchievementConstraints(
+      Achievement(
+        "Abenteurer",
+        "Jeweils fünf Biere, Shots und Cocktails bestellt",
+        "/internal/assets/achievements/abenteurer.jpg"
+      ),
+      List(BEER countHigherOrEqualThan 5, SHOT countHigherOrEqualThan 5, COCKTAIL countHigherOrEqualThan 5)
+    ),
+    AchievementConstraints(
+      Achievement(
+        "Der Alles-Trinker",
+        "Jeweils 10 Biere, Shots und Cocktails bestellt",
+        "/internal/assets/achievements/derallestrinker.jpg"
+      ),
+      List(BEER countHigherOrEqualThan 10, SHOT countHigherOrEqualThan 10, COCKTAIL countHigherOrEqualThan 10)
+    ),
+    AchievementConstraints(
+      Achievement(
+        "Herrengedeck",
+        "Nen Bier und nen Kurzen bestellt",
+        "/internal/assets/achievements/herrengedeck.jpg"
+      ),
+      List(BEER countHigherOrEqualThan 1, SHOT countHigherOrEqualThan 1)
     )
+    //Luftalarm
   )
 }
