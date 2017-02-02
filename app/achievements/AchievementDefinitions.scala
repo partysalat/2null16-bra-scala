@@ -45,10 +45,19 @@ object AchievementDefinitions {
     AchievementConstraints(
       Achievement(
         "Barney",
-        "25 Cocktails bestellt",
+        "25 Bier bestellt",
         "/internal/assets/achievements/barney.png"
       ),
       List(BEER countHigherOrEqualThan 25)
+    ),
+
+    AchievementConstraints(
+      Achievement(
+        "Hemingway",
+        "1 Cocktails bestellt",
+        "/internal/assets/achievements/barney.png"
+      ),
+      List(COCKTAIL countHigherOrEqualThan 1)
     )
   )
 }

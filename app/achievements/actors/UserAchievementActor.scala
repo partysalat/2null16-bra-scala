@@ -1,6 +1,7 @@
 package achievements.actors
 
 import achievements.AchievementDefinitions
+
 import achievements.models.Achievement
 import achievements.repos.AchievementsRepository
 import akka.actor.{Actor, Props, Stash}
@@ -51,10 +52,10 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats, newsRepository: Ne
   def normalReceive: Receive = {
     case ProcessDrinkNews(news) if news.userId.contains(userId) && news.`type` == NewsType.DRINK =>
       Logger.debug(s"actor $userId received news $news")
-        Logger.info(s"User $userId has drink with id ${news.drinkId}")
-        increaseCounters(news)
-          .map(_ => achievementMetrics.checkAchievements)
-          .map(addAchievementsToUser)
+      Logger.info(s"User $userId has drink with id ${news.drinkId}")
+      increaseCounters(news)
+        .map(_ => achievementMetrics.checkAchievements)
+        .map(addAchievementsToUser)
     case _ => ()
   }
 
@@ -74,28 +75,26 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats, newsRepository: Ne
 
   def increaseCounters(news: News): Future[Unit] = {
     import Property._
-    achievementMetrics.addValue(drinkCountProperties.keySet.toList, news.cardinality)
-    drinksRepository.getById(news.drinkId.get).map(_.`type`).map {
-      case DrinkType.BEER => achievementMetrics.addValue(beerProperties.keySet.toList, news.cardinality)
-      case DrinkType.COCKTAIL => achievementMetrics.addValue(cocktailProperties.keySet.toList, news.cardinality)
-      case DrinkType.SHOT => achievementMetrics.addValue(shotProperties.keySet.toList, news.cardinality)
-      case DrinkType.SOFTDRINK => achievementMetrics.addValue(softdrinkProperties.keySet.toList, news.cardinality)
-      case _ => ()
-    }
+    import AchievementCounterType._
+    achievementMetrics.addValue(countProperties(DRINK_COUNT).keySet.toList, news.cardinality)
+    drinksRepository.getById(news.drinkId.get).map(_.`type`)
+      .map { drinkType =>
+        achievementMetrics.addValue(countProperties(drinkType.toCounterType).keySet.toList, news.cardinality)
+      }
   }
 
   def initializeAchievementMetrics: Future[Unit] = {
     import Property._
-
+    import AchievementCounterType._
     AchievementDefinitions.achievements
       .map(_.copy())
       .foreach(achievementMetrics.defineAchievement)
 
-    initCounter(drinkCountProperties, newsStats.drinkCount.getOrElse(0))
-    initCounter(beerProperties, newsStats.beerCount.getOrElse(0))
-    initCounter(cocktailProperties, newsStats.cocktailCount.getOrElse(0))
-    initCounter(shotProperties, newsStats.shotCount.getOrElse(0))
-    initCounter(softdrinkProperties, newsStats.softdrinkCount.getOrElse(0))
+    initCounter(countProperties(DRINK_COUNT), newsStats.drinkCount.getOrElse(0))
+    initCounter(countProperties(BEER), newsStats.beerCount.getOrElse(0))
+    initCounter(countProperties(COCKTAIL), newsStats.cocktailCount.getOrElse(0))
+    initCounter(countProperties(SHOT), newsStats.shotCount.getOrElse(0))
+    initCounter(countProperties(SOFTDRINK), newsStats.softdrinkCount.getOrElse(0))
 
     val previousAchievements = achievementMetrics.checkAchievements
     Logger.debug(s"Initial unlocked achievements: ${previousAchievements.toString()}")

@@ -2,6 +2,7 @@ package achievements.actors
 
 import achievements.actors.AchievementCounterType.AchievementCounterType
 import achievements.models.Achievement
+import drinks.models.DrinkType.DrinkType
 import play.api.Logger
 
 import scala.collection.mutable
@@ -68,11 +69,15 @@ object AchievementCounterType extends Enumeration {
   val COCKTAIL = Value("COCKTAIL")
   val SHOT = Value("SHOT")
   val SOFTDRINK = Value("SOFTDRINK")
+  implicit class DrinkTypeToAchievementCounterType(drinkType: DrinkType){
+    def toCounterType = {
+      AchievementCounterType.withName(drinkType.toString)
+    }
+  }
 
 }
 
 object Property {
-
   implicit class HigherThan(drinkType: AchievementCounterType){
     def countHigherOrEqualThan(count:Int) = {
       Property.countHigherThanOrEqual(drinkType,count)
@@ -86,14 +91,7 @@ object Property {
 
   def countHigherThanOrEqual(drinkType:AchievementCounterType, number:Int)={
     val counterName = s"${drinkType.toString}HigherThan$number"
-    drinkType match {
-      case AchievementCounterType.DRINK_COUNT => drinkCountProperties(counterName) = toProperty(counterName,number)
-      case AchievementCounterType.BEER => beerProperties(counterName) = toProperty(counterName,number)
-      case AchievementCounterType.COCKTAIL => cocktailProperties(counterName) = toProperty(counterName,number)
-      case AchievementCounterType.SOFTDRINK => softdrinkProperties(counterName) = toProperty(counterName,number)
-      case AchievementCounterType.SHOT => shotProperties(counterName) = toProperty(counterName,number)
-      case _ => Logger.warn(s"No property map defined for $drinkType")
-    }
+    countProperties(drinkType)(counterName) = toProperty(counterName,number)
     counterName
   }
 
@@ -101,12 +99,14 @@ object Property {
     Property(counterName,0,ACTIVE_IF_GREATER_THAN,activationCount)
   }
 
-  val drinkCountProperties: mutable.Map[String, Property] = mutable.Map()
-  val beerProperties: mutable.Map[String, Property] = mutable.Map()
-  val cocktailProperties: mutable.Map[String, Property] =mutable.Map()
-  val shotProperties: mutable.Map[String, Property] = mutable.Map()
-  val softdrinkProperties: mutable.Map[String, Property] = mutable.Map()
 
+ // val tmp: Set[(AchievementCounterType, mutable.Map[String, Property])] = AchievementCounterType.values.map(counterType => (counterType,mutable.Map[String,Property]()))
+  val countProperties: mutable.Map[AchievementCounterType.Value, mutable.Map[String, Property]] = initPropertyCount
+
+  def initPropertyCount:mutable.Map[AchievementCounterType.Value, mutable.Map[String, Property]]= {
+    val tmp1: Seq[(AchievementCounterType, mutable.Map[String, Property])] = AchievementCounterType.values.toSeq.map(counterType => (counterType,mutable.Map[String,Property]()))
+    mutable.Map() ++ tmp1.toMap
+  }
 }
 
 case class Property(
