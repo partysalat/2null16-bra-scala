@@ -83,6 +83,7 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats,statsForAll:NewsSta
     drinksRepository.getById(news.drinkId.get)
       .map { drink =>
         achievementMetrics.addValues(countProperties(drink.`type`.toCounterType)(ALL).keySet.toList, news.cardinality,Some(drink.name))
+        achievementMetrics.addValues(countProperties(CUSTOM)(ALL).keySet.toList, news.cardinality,Some(drink.name))
       }
   }
 
@@ -95,6 +96,9 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats,statsForAll:NewsSta
       .map { drink =>
         achievementMetrics.addValues(countProperties(drink.`type`.toCounterType)(USER).keySet.toList, news.cardinality,Some(drink.name))
         achievementMetrics.setValues(countProperties(drink.`type`.toCounterType)(AT_ONCE).keySet.toList, news.cardinality,Some(drink.name))
+
+        achievementMetrics.addValues(countProperties(CUSTOM)(USER).keySet.toList, news.cardinality,Some(drink.name))
+        achievementMetrics.setValues(countProperties(CUSTOM)(AT_ONCE).keySet.toList, news.cardinality,Some(drink.name))
       }
   }
 
@@ -111,12 +115,14 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats,statsForAll:NewsSta
     initCounter(countProperties(COCKTAIL)(USER), newsStats.cocktailCount.getOrElse(0))
     initCounter(countProperties(SHOT)(USER), newsStats.shotCount.getOrElse(0))
     initCounter(countProperties(SOFTDRINK)(USER), newsStats.softdrinkCount.getOrElse(0))
+    initCounter(countProperties(CUSTOM)(USER), 0)
 
     initCounter(countProperties(DRINK_COUNT)(ALL), statsForAll.drinkCount.getOrElse(0))
     initCounter(countProperties(BEER)(ALL), statsForAll.beerCount.getOrElse(0))
     initCounter(countProperties(COCKTAIL)(ALL), statsForAll.cocktailCount.getOrElse(0))
     initCounter(countProperties(SHOT)(ALL), statsForAll.shotCount.getOrElse(0))
     initCounter(countProperties(SOFTDRINK)(ALL), statsForAll.softdrinkCount.getOrElse(0))
+    initCounter(countProperties(CUSTOM)(AT_ONCE), 0)
 
     AchievementDrinkType.values.foreach(drinkType=>initCounter(countProperties(drinkType)(AT_ONCE), 0))
 

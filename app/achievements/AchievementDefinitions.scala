@@ -209,6 +209,14 @@ object AchievementDefinitions {
         "/internal/assets/achievements/herrengedeck.jpg"
       ),
       List((BEER,USER) countHigherOrEqualThan 1, (SHOT,USER)  countHigherOrEqualThan 1)
+    ),
+    AchievementConstraints(
+      Achievement(
+        "Luftalarm",
+        "Mindestens 5 Berliner Luft bestellt",
+        "/internal/assets/achievements/luftalarm.jpg"
+      ),
+      List(("Berliner Luft",AT_ONCE) countHigherOrEqualThan 5)
     )
     //Luftalarm*/
   )

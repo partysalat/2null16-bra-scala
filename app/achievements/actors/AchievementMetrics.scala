@@ -29,22 +29,23 @@ case class AchievementMetrics(
     val result = for {
       propertyDrinkName <- property.customDrinkName
       drinkName <- name
-    }yield drinkName.contains(propertyDrinkName)
+    } yield drinkName.contains(propertyDrinkName)
+    if (property.customDrinkName.isDefined) {
+      Logger.info(s"fooo$result")
+    }
     result.getOrElse(true)
   }
 
   def setValue(propertyName: String, value: Int, name: Option[String]): Unit = {
-    properties.get(propertyName).map { property: Property =>
-      if (nameMatchesPropertyDrinkName(name, property)) {
+    properties.get(propertyName)
+      .filter(nameMatchesPropertyDrinkName(name, _))
+      .map { property: Property =>
         property.activation match {
           case ACTIVE_IF_GREATER_THAN => if (value > property.value) value else property.value
           case ACTIVE_IF_LESS_THAN => if (value < property.value) value else property.value
           case _ => value
         }
-      } else {
-        property.value
-      }
-    }.foreach { (newValue: Int) =>
+      }.foreach { (newValue: Int) =>
       properties(propertyName).value = newValue
     }
   }
@@ -156,13 +157,13 @@ object Property {
   }
 
   def countHigherThanOrEqual(drinkType: AchievementDrinkType, counterType: AchievementCounterType, number: Int, customDrinkName: Option[String] = None) = {
-    val counterName = s"${drinkType.toString}$customDrinkName${counterType.toString}HigherThan$number"
+    val counterName = s"""${drinkType.toString}${customDrinkName.getOrElse("")}${counterType.toString}HigherThan$number"""
     countProperties(drinkType)(counterType)(counterName) = toProperty(counterName, number, ACTIVE_IF_GREATER_THAN, customDrinkName)
     counterName
   }
 
   def countEqual(drinkType: AchievementDrinkType, counterType: AchievementCounterType, number: Int, customDrinkName: Option[String] = None) = {
-    val counterName = s"${drinkType.toString}$customDrinkName${counterType.toString}Equals$number"
+    val counterName = s"${drinkType.toString}${customDrinkName.getOrElse("")}${counterType.toString}Equals$number"
     countProperties(drinkType)(counterType)(counterName) = toProperty(counterName, number, ACTIVE_IF_EQUALS_TO, customDrinkName)
     counterName
   }
