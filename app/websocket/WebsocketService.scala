@@ -7,7 +7,7 @@ import akka.util.Timeout
 import com.google.inject.name.Named
 import com.google.inject.{Inject, Singleton}
 import news.repos.NewsRepository
-import websocket.WebsocketActor.NotifyNews
+import websocket.WebsocketActor.{NotifyNews, NotifyNewsRemove}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -23,5 +23,9 @@ class WebsocketService @Inject()( @Named("websocketSystem") implicit val system:
       .map(newsWithItems=>
         manager.broadcast(NotifyNews(newsWithItems))
       )
+  }
+
+  def notifyNewsRemove(newsId:Int): Unit ={
+    manager.broadcast(NotifyNewsRemove(newsId))
   }
 }

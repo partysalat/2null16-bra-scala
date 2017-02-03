@@ -31,4 +31,3 @@ su - pi -c <FULL_PATH_TO_SCRIPT>/start.sh &
 * add all achievements and a little bit more
 * remove coffee and take photo card
 * Download as CSV
-* Fill users achievement based on persistence in db

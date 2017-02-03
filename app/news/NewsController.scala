@@ -15,9 +15,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
 
 @Singleton
-class NewsController @Inject()(@Named("websocketSystem") websocketActorSystem:ActorSystem,
+class NewsController @Inject()(@Named("websocketSystem") websocketActorSystem: ActorSystem,
                                newsRepository: NewsRepository,
-                               achievementService:AchievementService,
+                               achievementService: AchievementService,
                                websocketService: WebsocketService)
                               (implicit exec: ExecutionContext) extends Controller {
   val logger: Logger = Logger(this.getClass)
@@ -42,7 +42,7 @@ class NewsController @Inject()(@Named("websocketSystem") websocketActorSystem:Ac
       News(userNews.cardinality, NewsType.DRINK, userId = Some(userNews.id), drinkId = Some(drinkId))
     })
 
-    achievementService.notifyAchievements(newsList).flatMap {_=>
+    achievementService.notifyAchievements(newsList).flatMap { _ =>
       Logger.info("Insert newslist")
       newsRepository
         .insertAll(newsList)
@@ -73,6 +73,7 @@ class NewsController @Inject()(@Named("websocketSystem") websocketActorSystem:Ac
   def removeNews(newsId: Int) = Action.async {
     newsRepository
       .removeNews(newsId)
+      .map(_ => websocketService.notifyNewsRemove(newsId))
       .map(_ => NoContent)
       .recoverWith({
         case e => Future {
