@@ -129,7 +129,6 @@ object AchievementDefinitions {
     /**
       * Einmalig
       */
-    //glueckspils
     AchievementConstraints(
       Achievement(
         "Glückspils",

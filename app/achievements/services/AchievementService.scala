@@ -10,7 +10,7 @@ import akka.util.Timeout
 import com.google.inject.name.Named
 import com.google.inject.{Inject, Singleton}
 import drinks.repos.DrinksRepository
-import news.models.News
+import news.models.{News, NewsStats}
 import news.repos.NewsRepository
 import play.api.Logger
 import websocket.WebsocketService
@@ -28,8 +28,13 @@ class AchievementService @Inject()(
   implicit val timeout = Timeout(20, TimeUnit.SECONDS)
 
   def notifyAchievements(newsList: List[News]): Future[Unit] = {
-    Future.sequence(newsList.filter(_.userId.isDefined).map(ensureActorIsCreated))
-      .map(_ => notifyEm(newsList))
+    newsRepository.getStatsForAll.flatMap { newsStats =>
+      Future
+        .sequence(
+          newsList.filter(_.userId.isDefined).map(ensureActorIsCreated(_, newsStats))
+        )
+        .map(_ => notifyEm(newsList))
+    }
   }
 
   private def notifyEm(newsList: List[News]) = {
@@ -38,17 +43,15 @@ class AchievementService @Inject()(
       .foreach(drinkNews => system.actorSelection(system / "*") ! drinkNews)
   }
 
-  private def ensureActorIsCreated(news: News): Future[ActorRef] = {
+  private def ensureActorIsCreated(news: News, statsForAll: NewsStats): Future[ActorRef] = {
     val actorId = news.userId.get.toString
     system.actorSelection(system / actorId).resolveOne()
       .recoverWith({
         case ActorNotFound(_) =>
           val statsForUserFut = newsRepository.getStatsForUser(news.userId.get)
-          val statsForAllFut =   newsRepository.getStatsForAll
           for {
             statsForUser <- statsForUserFut
-            statsForAll <- statsForAllFut
-          } yield system.actorOf(UserAchievementActor.props(news.userId.get, statsForUser,statsForAll, newsRepository, drinksRepository, achievementsRepository, websocketService), name = actorId)
+          } yield system.actorOf(UserAchievementActor.props(news.userId.get, statsForUser, statsForAll, newsRepository, drinksRepository, achievementsRepository, websocketService), name = actorId)
       })
 
   }
