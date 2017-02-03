@@ -2,6 +2,7 @@ package achievements.actors
 
 import achievements.actors.AchievementComparator.AchievementComparator
 import achievements.actors.AchievementCounterType.AchievementCounterType
+import achievements.actors.AchievementDrinkType.AchievementDrinkType
 import achievements.models.Achievement
 import drinks.models.DrinkType.DrinkType
 import play.api.Logger
@@ -76,39 +77,32 @@ case class AchievementConstraints(
                         props: List[String],
                         var unlocked: Boolean = false
                       )
-object AchievementCounterType extends Enumeration {
-  type AchievementCounterType = Value
+
+
+object AchievementDrinkType extends Enumeration {
+  type AchievementDrinkType = Value
   //user specific metrics
   val DRINK_COUNT = Value("DRINK_COUNT")
   val BEER = Value("BEER")
   val COCKTAIL = Value("COCKTAIL")
   val SHOT = Value("SHOT")
   val SOFTDRINK = Value("SOFTDRINK")
+}
+
+object AchievementCounterType extends Enumeration {
+  type AchievementCounterType = Value
+  //user specific metrics
+  val USER = Value("USER")
 
   // sum metrics
-  val DRINK_COUNT_ALL = Value("DRINK_COUNT_ALL")
-  val BEER_ALL = Value("BEER_ALL")
-  val COCKTAIL_ALL = Value("COCKTAIL_ALL")
-  val SHOT_ALL = Value("SHOT_ALL")
-  val SOFTDRINK_ALL = Value("SOFTDRINK_ALL")
+  val ALL = Value("DRINK_COUNT_ALL")
 
   //Count at once
-  val DRINK_COUNT_AT_ONCE = Value("DRINK_COUNT_AT_ONCE")
-  val BEER_AT_ONCE = Value("BEER_AT_ONCE")
-  val SHOT_AT_ONCE = Value("SHOT_AT_ONCE")
-  val COCKTAIL_AT_ONCE = Value("COCKTAIL_AT_ONCE")
-  val SOFTDRINK_AT_ONCE = Value("SOFTDRINK_AT_ONCE")
+  val AT_ONCE = Value("DRINK_COUNT_AT_ONCE")
 
   implicit class DrinkTypeToAchievementCounterType(drinkType: DrinkType){
     def toCounterType = {
-      AchievementCounterType.withName(drinkType.toString)
-    }
-    def toAllCounterType = {
-      AchievementCounterType.withName(s"${drinkType.toString}_ALL")
-    }
-
-    def toAtOnceCounterType = {
-      AchievementCounterType.withName(s"${drinkType.toString}_AT_ONCE")
+      AchievementDrinkType.withName(drinkType.toString)
     }
   }
 
@@ -122,26 +116,27 @@ object AchievementComparator extends Enumeration{
 
 object Property {
   import AchievementComparator._
-  implicit class HigherThan(drinkType: AchievementCounterType){
+
+  implicit class HigherThan(types: (AchievementDrinkType,AchievementCounterType)){
     def countHigherOrEqualThan(count:Int) = {
-      Property.countHigherThanOrEqual(drinkType,count)
+      Property.countHigherThanOrEqual(types._1,types._2,count)
     }
     def countEquals(count:Int) = {
-      Property.countEqual(drinkType,count)
+      Property.countEqual(types._1,types._2,count)
     }
   }
 
 
-  def countHigherThanOrEqual(counterType:AchievementCounterType, number:Int)={
-    val counterName = s"${counterType.toString}HigherThan$number"
-    countProperties(counterType)(counterName) = toProperty(counterName,number,ACTIVE_IF_GREATER_THAN)
+  def countHigherThanOrEqual(drinkType: AchievementDrinkType,counterType:AchievementCounterType, number:Int)={
+    val counterName = s"${drinkType.toString}${counterType.toString}HigherThan$number"
+    countProperties(drinkType)(counterType)(counterName) = toProperty(counterName,number,ACTIVE_IF_GREATER_THAN)
 
     counterName
   }
 
-  def countEqual(counterType:AchievementCounterType, number:Int)={
-    val counterName = s"${counterType.toString}Equals$number"
-    countProperties(counterType)(counterName) = toProperty(counterName,number,ACTIVE_IF_EQUALS_TO)
+  def countEqual(drinkType: AchievementDrinkType,counterType:AchievementCounterType, number:Int)={
+    val counterName = s"${drinkType.toString}${counterType.toString}Equals$number"
+    countProperties(drinkType)(counterType)(counterName) = toProperty(counterName,number,ACTIVE_IF_EQUALS_TO)
     counterName
   }
 
@@ -149,11 +144,18 @@ object Property {
     Property(counterName,0,comparator,activationCount)
   }
 
-  val countProperties: mutable.Map[AchievementCounterType.Value, mutable.Map[String, Property]] = initPropertyCount
+  val countProperties: mutable.Map[AchievementDrinkType,mutable.Map[AchievementCounterType, mutable.Map[String, Property]]] = initPropertyCount
 
-  def initPropertyCount:mutable.Map[AchievementCounterType.Value, mutable.Map[String, Property]]= {
-    val tmp1: Seq[(AchievementCounterType, mutable.Map[String, Property])] = AchievementCounterType.values.toSeq.map(counterType => (counterType,mutable.Map[String,Property]()))
-    mutable.Map() ++ tmp1.toMap
+  def initPropertyCount:mutable.Map[AchievementDrinkType,mutable.Map[AchievementCounterType, mutable.Map[String, Property]]]= {
+
+    val tmp0 =AchievementDrinkType.values.toSeq
+      .map(drinkType =>
+        (
+          drinkType,
+          mutable.Map[AchievementCounterType, mutable.Map[String,Property]]() ++ AchievementCounterType.values.toSeq.map((_,mutable.Map[String,Property]())).toMap
+        )
+      ).toMap
+    mutable.Map() ++ tmp0
   }
 }
 

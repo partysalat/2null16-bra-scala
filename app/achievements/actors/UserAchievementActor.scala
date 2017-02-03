@@ -77,49 +77,48 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats,statsForAll:NewsSta
   }
   def increaseAllCounters(news:News): Future[Unit] = {
     import AchievementCounterType._
+    import AchievementDrinkType._
     import Property._
-    achievementMetrics.addValues(countProperties(DRINK_COUNT_ALL).keySet.toList, news.cardinality)
+    achievementMetrics.addValues(countProperties(DRINK_COUNT)(ALL).keySet.toList, news.cardinality)
     drinksRepository.getById(news.drinkId.get).map(_.`type`)
       .map { drinkType =>
-        achievementMetrics.addValues(countProperties(drinkType.toAllCounterType).keySet.toList, news.cardinality)
+        achievementMetrics.addValues(countProperties(drinkType.toCounterType)(ALL).keySet.toList, news.cardinality)
       }
   }
 
   def increaseCounters(news: News): Future[Unit] = {
     import AchievementCounterType._
+    import AchievementDrinkType._
     import Property._
-    achievementMetrics.addValues(countProperties(DRINK_COUNT).keySet.toList, news.cardinality)
+    achievementMetrics.addValues(countProperties(DRINK_COUNT)(USER).keySet.toList, news.cardinality)
     drinksRepository.getById(news.drinkId.get).map(_.`type`)
       .map { drinkType =>
-        achievementMetrics.addValues(countProperties(drinkType.toCounterType).keySet.toList, news.cardinality)
-        achievementMetrics.setValues(countProperties(drinkType.toAtOnceCounterType).keySet.toList, news.cardinality)
+        achievementMetrics.addValues(countProperties(drinkType.toCounterType)(USER).keySet.toList, news.cardinality)
+        achievementMetrics.setValues(countProperties(drinkType.toCounterType)(AT_ONCE).keySet.toList, news.cardinality)
       }
   }
 
   def initializeAchievementMetrics: Future[Unit] = {
     import AchievementCounterType._
+    import AchievementDrinkType._
     import Property._
     AchievementDefinitions.achievements
       .map(_.copy())
       .foreach(achievementMetrics.defineAchievement)
 
-    initCounter(countProperties(DRINK_COUNT), newsStats.drinkCount.getOrElse(0))
-    initCounter(countProperties(BEER), newsStats.beerCount.getOrElse(0))
-    initCounter(countProperties(COCKTAIL), newsStats.cocktailCount.getOrElse(0))
-    initCounter(countProperties(SHOT), newsStats.shotCount.getOrElse(0))
-    initCounter(countProperties(SOFTDRINK), newsStats.softdrinkCount.getOrElse(0))
+    initCounter(countProperties(DRINK_COUNT)(USER), newsStats.drinkCount.getOrElse(0))
+    initCounter(countProperties(BEER)(USER), newsStats.beerCount.getOrElse(0))
+    initCounter(countProperties(COCKTAIL)(USER), newsStats.cocktailCount.getOrElse(0))
+    initCounter(countProperties(SHOT)(USER), newsStats.shotCount.getOrElse(0))
+    initCounter(countProperties(SOFTDRINK)(USER), newsStats.softdrinkCount.getOrElse(0))
 
-    initCounter(countProperties(DRINK_COUNT_ALL), statsForAll.drinkCount.getOrElse(0))
-    initCounter(countProperties(BEER_ALL), statsForAll.beerCount.getOrElse(0))
-    initCounter(countProperties(COCKTAIL_ALL), statsForAll.cocktailCount.getOrElse(0))
-    initCounter(countProperties(SHOT_ALL), statsForAll.shotCount.getOrElse(0))
-    initCounter(countProperties(SOFTDRINK_ALL), statsForAll.softdrinkCount.getOrElse(0))
+    initCounter(countProperties(DRINK_COUNT)(ALL), statsForAll.drinkCount.getOrElse(0))
+    initCounter(countProperties(BEER)(ALL), statsForAll.beerCount.getOrElse(0))
+    initCounter(countProperties(COCKTAIL)(ALL), statsForAll.cocktailCount.getOrElse(0))
+    initCounter(countProperties(SHOT)(ALL), statsForAll.shotCount.getOrElse(0))
+    initCounter(countProperties(SOFTDRINK)(ALL), statsForAll.softdrinkCount.getOrElse(0))
 
-    initCounter(countProperties(DRINK_COUNT_AT_ONCE), 0)
-    initCounter(countProperties(BEER_AT_ONCE), 0)
-    initCounter(countProperties(SHOT_AT_ONCE), 0)
-    initCounter(countProperties(COCKTAIL_AT_ONCE), 0)
-    initCounter(countProperties(SOFTDRINK_AT_ONCE), 0)
+    AchievementDrinkType.values.foreach(drinkType=>initCounter(countProperties(drinkType)(AT_ONCE), 0))
 
     Logger.info(s"Initial property values ${achievementMetrics.properties}")
 
