@@ -80,9 +80,9 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats,statsForAll:NewsSta
     import AchievementDrinkType._
     import Property._
     achievementMetrics.addValues(countProperties(DRINK_COUNT)(ALL).keySet.toList, news.cardinality)
-    drinksRepository.getById(news.drinkId.get).map(_.`type`)
-      .map { drinkType =>
-        achievementMetrics.addValues(countProperties(drinkType.toCounterType)(ALL).keySet.toList, news.cardinality)
+    drinksRepository.getById(news.drinkId.get)
+      .map { drink =>
+        achievementMetrics.addValues(countProperties(drink.`type`.toCounterType)(ALL).keySet.toList, news.cardinality,Some(drink.name))
       }
   }
 
@@ -91,10 +91,10 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats,statsForAll:NewsSta
     import AchievementDrinkType._
     import Property._
     achievementMetrics.addValues(countProperties(DRINK_COUNT)(USER).keySet.toList, news.cardinality)
-    drinksRepository.getById(news.drinkId.get).map(_.`type`)
-      .map { drinkType =>
-        achievementMetrics.addValues(countProperties(drinkType.toCounterType)(USER).keySet.toList, news.cardinality)
-        achievementMetrics.setValues(countProperties(drinkType.toCounterType)(AT_ONCE).keySet.toList, news.cardinality)
+    drinksRepository.getById(news.drinkId.get)
+      .map { drink =>
+        achievementMetrics.addValues(countProperties(drink.`type`.toCounterType)(USER).keySet.toList, news.cardinality,Some(drink.name))
+        achievementMetrics.setValues(countProperties(drink.`type`.toCounterType)(AT_ONCE).keySet.toList, news.cardinality,Some(drink.name))
       }
   }
 
