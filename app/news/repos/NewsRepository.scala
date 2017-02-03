@@ -128,6 +128,10 @@ class NewsRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPro
   def removeNews(newsId:Int) = db.run {
     news.filter(_.id === newsId).delete
   }
+
+  def emptyTable = db.run {
+    news.delete
+  }
 }
 
 

@@ -83,6 +83,11 @@ class NewsController @Inject()(@Named("websocketSystem") websocketActorSystem: A
       })
   }
 
+  def dropNews = Action.async {
+    newsRepository.emptyTable
+      .map(_=> NoContent)
+  }
+
 }
 
 
