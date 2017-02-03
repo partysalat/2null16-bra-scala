@@ -115,7 +115,14 @@ object AchievementDefinitions {
     /**
       * Shotrunden
       */
-
+    AchievementConstraints(
+      Achievement(
+        "Die nächste Runde geht auf mich",
+        "Mindestens 10 Shots auf einmal bestellt",
+        "/internal/assets/achievements/dienaechsterundegehtaufmich.jpg"
+      ),
+      List(SHOT_AT_ONCE countHigherOrEqualThan 10)
+    ),
     //Die nächste Runde geht auf mich
     //'ne Runde für alle!
 

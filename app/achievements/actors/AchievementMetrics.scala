@@ -1,5 +1,6 @@
 package achievements.actors
 
+import achievements.actors.AchievementComparator.AchievementComparator
 import achievements.actors.AchievementCounterType.AchievementCounterType
 import achievements.models.Achievement
 import drinks.models.DrinkType.DrinkType
@@ -12,6 +13,7 @@ case class AchievementMetrics(
                                properties: Map[String, Property] = Map(),
                                achievements: Map[String, AchievementConstraints] = Map()
                              ) {
+  import AchievementComparator._
   def defineProperty(property: Property) = {
     properties(property.name) = property
   }
@@ -23,8 +25,8 @@ case class AchievementMetrics(
   def setValue(propertyName: String, value: Int): Unit = {
     properties.get(propertyName).map { property: Property =>
       property.activation match {
-        case Property.ACTIVE_IF_GREATER_THAN => if (value > property.value) value else property.value
-        case Property.ACTIVE_IF_LESS_THAN => if (value < property.value) value else property.value
+        case ACTIVE_IF_GREATER_THAN => if (value > property.value) value else property.value
+        case ACTIVE_IF_LESS_THAN => if (value < property.value) value else property.value
         case _ => value
       }
     }.foreach { (newValue: Int) =>
@@ -32,7 +34,11 @@ case class AchievementMetrics(
     }
   }
 
-  def addValue(propertyNames: List[String], value: Int) = {
+  def setValues(propertyNames: List[String], value: Int) = {
+    propertyNames.foreach(propertyName => setValue(propertyName, value))
+  }
+
+  def addValues(propertyNames: List[String], value: Int) = {
     propertyNames.foreach(propertyName => setValue(propertyName, getValue(propertyName) + value))
   }
 
@@ -71,12 +77,19 @@ object AchievementCounterType extends Enumeration {
   val SHOT = Value("SHOT")
   val SOFTDRINK = Value("SOFTDRINK")
 
+  // sum metrics
   val DRINK_COUNT_ALL = Value("DRINK_COUNT_ALL")
   val BEER_ALL = Value("BEER_ALL")
   val COCKTAIL_ALL = Value("COCKTAIL_ALL")
   val SHOT_ALL = Value("SHOT_ALL")
   val SOFTDRINK_ALL = Value("SOFTDRINK_ALL")
 
+  //Count at once
+  val DRINK_COUNT_AT_ONCE = Value("DRINK_COUNT_AT_ONCE")
+  val BEER_AT_ONCE = Value("BEER_AT_ONCE")
+  val SHOT_AT_ONCE = Value("SHOT_AT_ONCE")
+  val COCKTAIL_AT_ONCE = Value("COCKTAIL_AT_ONCE")
+  val SOFTDRINK_AT_ONCE = Value("SOFTDRINK_AT_ONCE")
 
   implicit class DrinkTypeToAchievementCounterType(drinkType: DrinkType){
     def toCounterType = {
@@ -85,11 +98,22 @@ object AchievementCounterType extends Enumeration {
     def toAllCounterType = {
       AchievementCounterType.withName(s"${drinkType.toString}_ALL")
     }
+
+    def toAtOnceCounterType = {
+      AchievementCounterType.withName(s"${drinkType.toString}_AT_ONCE")
+    }
   }
 
 }
+object AchievementComparator extends Enumeration{
+  type AchievementComparator = Value
+  val ACTIVE_IF_GREATER_THAN = Value(">")
+  val ACTIVE_IF_LESS_THAN = Value("<")
+  val ACTIVE_IF_EQUALS_TO = Value("=")
+}
 
 object Property {
+  import AchievementComparator._
   implicit class HigherThan(drinkType: AchievementCounterType){
     def countHigherOrEqualThan(count:Int) = {
       Property.countHigherThanOrEqual(drinkType,count)
@@ -99,9 +123,6 @@ object Property {
     }
   }
 
-  val ACTIVE_IF_GREATER_THAN = ">"
-  val ACTIVE_IF_LESS_THAN = "<"
-  val ACTIVE_IF_EQUALS_TO = "="
 
   def countHigherThanOrEqual(counterType:AchievementCounterType, number:Int)={
     val counterName = s"${counterType.toString}HigherThan$number"
@@ -116,7 +137,7 @@ object Property {
     counterName
   }
 
-  private def toProperty(counterName: String,activationCount: Int,comparator:String):Property = {
+  private def toProperty(counterName: String,activationCount: Int,comparator: AchievementComparator):Property = {
     Property(counterName,0,comparator,activationCount)
   }
 
@@ -131,12 +152,12 @@ object Property {
 case class Property(
                      name: String,
                      initialValue: Int,
-                     activation: String,
+                     activation: AchievementComparator,
                      activationValue: Int,
                      var value: Int = 0
                    ) {
 
-  import Property._
+  import AchievementComparator._
 
   def isActive: Boolean = {
     activation match {

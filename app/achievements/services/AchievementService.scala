@@ -29,6 +29,7 @@ class AchievementService @Inject()(
 
   def notifyAchievements(newsList: List[News]): Future[Unit] = {
     newsRepository.getStatsForAll.flatMap { newsStats =>
+      Logger.debug("Get stats for all from newsRepo, initializing actors....")
       Future
         .sequence(
           newsList.filter(_.userId.isDefined).map(ensureActorIsCreated(_, newsStats))
@@ -48,9 +49,9 @@ class AchievementService @Inject()(
     system.actorSelection(system / actorId).resolveOne()
       .recoverWith({
         case ActorNotFound(_) =>
-          val statsForUserFut = newsRepository.getStatsForUser(news.userId.get)
+          Logger.info(s"No actor found for $actorId")
           for {
-            statsForUser <- statsForUserFut
+            statsForUser <- newsRepository.getStatsForUser(news.userId.get)
           } yield system.actorOf(UserAchievementActor.props(news.userId.get, statsForUser, statsForAll, newsRepository, drinksRepository, achievementsRepository, websocketService), name = actorId)
       })
 

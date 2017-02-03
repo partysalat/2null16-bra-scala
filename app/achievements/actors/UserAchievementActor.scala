@@ -1,11 +1,9 @@
 package achievements.actors
 
 import achievements.AchievementDefinitions
-
 import achievements.models.Achievement
 import achievements.repos.AchievementsRepository
 import akka.actor.{Actor, Props, Stash}
-import drinks.models.DrinkType
 import drinks.repos.DrinksRepository
 import news.models.{News, NewsStats, NewsType}
 import news.repos.NewsRepository
@@ -28,6 +26,7 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats,statsForAll:NewsSta
                           (implicit ec: ExecutionContext) extends Actor with Stash {
 
   import UserAchievementActor._
+
   import scala.collection.mutable
 
   var achievementMetrics: AchievementMetrics = AchievementMetrics()
@@ -77,28 +76,29 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats,statsForAll:NewsSta
 
   }
   def increaseAllCounters(news:News): Future[Unit] = {
-    import Property._
     import AchievementCounterType._
-    achievementMetrics.addValue(countProperties(DRINK_COUNT_ALL).keySet.toList, news.cardinality)
+    import Property._
+    achievementMetrics.addValues(countProperties(DRINK_COUNT_ALL).keySet.toList, news.cardinality)
     drinksRepository.getById(news.drinkId.get).map(_.`type`)
       .map { drinkType =>
-        achievementMetrics.addValue(countProperties(drinkType.toAllCounterType).keySet.toList, news.cardinality)
+        achievementMetrics.addValues(countProperties(drinkType.toAllCounterType).keySet.toList, news.cardinality)
       }
   }
 
   def increaseCounters(news: News): Future[Unit] = {
-    import Property._
     import AchievementCounterType._
-    achievementMetrics.addValue(countProperties(DRINK_COUNT).keySet.toList, news.cardinality)
+    import Property._
+    achievementMetrics.addValues(countProperties(DRINK_COUNT).keySet.toList, news.cardinality)
     drinksRepository.getById(news.drinkId.get).map(_.`type`)
       .map { drinkType =>
-        achievementMetrics.addValue(countProperties(drinkType.toCounterType).keySet.toList, news.cardinality)
+        achievementMetrics.addValues(countProperties(drinkType.toCounterType).keySet.toList, news.cardinality)
+        achievementMetrics.setValues(countProperties(drinkType.toAtOnceCounterType).keySet.toList, news.cardinality)
       }
   }
 
   def initializeAchievementMetrics: Future[Unit] = {
-    import Property._
     import AchievementCounterType._
+    import Property._
     AchievementDefinitions.achievements
       .map(_.copy())
       .foreach(achievementMetrics.defineAchievement)
@@ -114,6 +114,8 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats,statsForAll:NewsSta
     initCounter(countProperties(COCKTAIL_ALL), statsForAll.cocktailCount.getOrElse(0))
     initCounter(countProperties(SHOT_ALL), statsForAll.shotCount.getOrElse(0))
     initCounter(countProperties(SOFTDRINK_ALL), statsForAll.softdrinkCount.getOrElse(0))
+
+    initCounter(countProperties(SHOT_AT_ONCE), 0)
 
     Logger.info(s"Initial property values ${achievementMetrics.properties}")
 
