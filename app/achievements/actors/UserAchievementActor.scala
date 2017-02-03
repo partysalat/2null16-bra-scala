@@ -53,9 +53,13 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats,statsForAll:NewsSta
     case ProcessDrinkNews(news) if news.userId.contains(userId) && news.`type` == NewsType.DRINK =>
       Logger.debug(s"actor $userId received news $news")
       Logger.info(s"User $userId has drink with id ${news.drinkId}")
+
       increaseCounters(news)
+        .flatMap(_=> increaseAllCounters(news))
         .map(_ => achievementMetrics.checkAchievements)
-        .map(addAchievementsToUser)
+        .flatMap(addAchievementsToUser)
+    case ProcessDrinkNews(news) if news.`type` == NewsType.DRINK =>
+      increaseAllCounters(news)
     case _ => ()
   }
 
@@ -71,6 +75,15 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats,statsForAll:NewsSta
         }
       }.map(websocketService.notify)
 
+  }
+  def increaseAllCounters(news:News): Future[Unit] = {
+    import Property._
+    import AchievementCounterType._
+    achievementMetrics.addValue(countProperties(DRINK_COUNT_ALL).keySet.toList, news.cardinality)
+    drinksRepository.getById(news.drinkId.get).map(_.`type`)
+      .map { drinkType =>
+        achievementMetrics.addValue(countProperties(drinkType.toAllCounterType).keySet.toList, news.cardinality)
+      }
   }
 
   def increaseCounters(news: News): Future[Unit] = {
@@ -95,6 +108,14 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats,statsForAll:NewsSta
     initCounter(countProperties(COCKTAIL), newsStats.cocktailCount.getOrElse(0))
     initCounter(countProperties(SHOT), newsStats.shotCount.getOrElse(0))
     initCounter(countProperties(SOFTDRINK), newsStats.softdrinkCount.getOrElse(0))
+
+    initCounter(countProperties(DRINK_COUNT_ALL), statsForAll.drinkCount.getOrElse(0))
+    initCounter(countProperties(BEER_ALL), statsForAll.beerCount.getOrElse(0))
+    initCounter(countProperties(COCKTAIL_ALL), statsForAll.cocktailCount.getOrElse(0))
+    initCounter(countProperties(SHOT_ALL), statsForAll.shotCount.getOrElse(0))
+    initCounter(countProperties(SOFTDRINK_ALL), statsForAll.softdrinkCount.getOrElse(0))
+
+    Logger.info(s"Initial property values ${achievementMetrics.properties}")
 
     val previousAchievements = achievementMetrics.checkAchievements
     Logger.debug(s"Initial unlocked achievements: ${previousAchievements.toString()}")

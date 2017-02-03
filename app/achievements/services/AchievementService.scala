@@ -12,6 +12,7 @@ import com.google.inject.{Inject, Singleton}
 import drinks.repos.DrinksRepository
 import news.models.News
 import news.repos.NewsRepository
+import play.api.Logger
 import websocket.WebsocketService
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -26,12 +27,13 @@ class AchievementService @Inject()(
                                   )(implicit ec: ExecutionContext) {
   implicit val timeout = Timeout(20, TimeUnit.SECONDS)
 
-  def notifyAchievements(newsList: List[News]) = {
+  def notifyAchievements(newsList: List[News]): Future[Unit] = {
     Future.sequence(newsList.filter(_.userId.isDefined).map(ensureActorIsCreated))
       .map(_ => notifyEm(newsList))
   }
 
   private def notifyEm(newsList: List[News]) = {
+    Logger.info("Notify users about achievements")
     newsList.map(ProcessDrinkNews)
       .foreach(drinkNews => system.actorSelection(system / "*") ! drinkNews)
   }

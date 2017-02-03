@@ -43,6 +43,7 @@ class NewsController @Inject()(@Named("websocketSystem") websocketActorSystem:Ac
     })
 
     achievementService.notifyAchievements(newsList).flatMap {_=>
+      Logger.info("Insert newslist")
       newsRepository
         .insertAll(newsList)
         .map(websocketService.notify)

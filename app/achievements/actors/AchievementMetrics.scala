@@ -23,8 +23,9 @@ case class AchievementMetrics(
   def setValue(propertyName: String, value: Int): Unit = {
     properties.get(propertyName).map { property: Property =>
       property.activation match {
-        case Property.ACTIVE_IF_GREATER_THAN => if (value > property.value) value else property.value;
+        case Property.ACTIVE_IF_GREATER_THAN => if (value > property.value) value else property.value
         case Property.ACTIVE_IF_LESS_THAN => if (value < property.value) value else property.value
+        case _ => value
       }
     }.foreach { (newValue: Int) =>
       properties(propertyName).value = newValue
@@ -51,7 +52,7 @@ case class AchievementMetrics(
         achievement.props.count(properties(_).isActive) == achievement.props.size
       )
     unlockedAchievements.foreach(unlockAchievement)
-
+    Logger.info(unlockedAchievements.toString)
     unlockedAchievements
   }
 }
@@ -64,14 +65,25 @@ case class AchievementConstraints(
 object AchievementCounterType extends Enumeration {
   type AchievementCounterType = Value
   //user specific metrics
-  val DRINK_COUNT = Value("ALL_DRINK")
+  val DRINK_COUNT = Value("DRINK_COUNT")
   val BEER = Value("BEER")
   val COCKTAIL = Value("COCKTAIL")
   val SHOT = Value("SHOT")
   val SOFTDRINK = Value("SOFTDRINK")
+
+  val DRINK_COUNT_ALL = Value("DRINK_COUNT_ALL")
+  val BEER_ALL = Value("BEER_ALL")
+  val COCKTAIL_ALL = Value("COCKTAIL_ALL")
+  val SHOT_ALL = Value("SHOT_ALL")
+  val SOFTDRINK_ALL = Value("SOFTDRINK_ALL")
+
+
   implicit class DrinkTypeToAchievementCounterType(drinkType: DrinkType){
     def toCounterType = {
       AchievementCounterType.withName(drinkType.toString)
+    }
+    def toAllCounterType = {
+      AchievementCounterType.withName(s"${drinkType.toString}_ALL")
     }
   }
 
@@ -82,20 +94,30 @@ object Property {
     def countHigherOrEqualThan(count:Int) = {
       Property.countHigherThanOrEqual(drinkType,count)
     }
+    def countEquals(count:Int) = {
+      Property.countEqual(drinkType,count)
+    }
   }
 
   val ACTIVE_IF_GREATER_THAN = ">"
-  val ACTIVE_IF_LESS_THAN = "="
-  val ACTIVE_IF_EQUALS_TO = "<"
+  val ACTIVE_IF_LESS_THAN = "<"
+  val ACTIVE_IF_EQUALS_TO = "="
 
   def countHigherThanOrEqual(counterType:AchievementCounterType, number:Int)={
     val counterName = s"${counterType.toString}HigherThan$number"
-    countProperties(counterType)(counterName) = toProperty(counterName,number)
+    countProperties(counterType)(counterName) = toProperty(counterName,number,ACTIVE_IF_GREATER_THAN)
+
     counterName
   }
 
-  private def toProperty(counterName: String,activationCount: Int):Property = {
-    Property(counterName,0,ACTIVE_IF_GREATER_THAN,activationCount)
+  def countEqual(counterType:AchievementCounterType, number:Int)={
+    val counterName = s"${counterType.toString}Equals$number"
+    countProperties(counterType)(counterName) = toProperty(counterName,number,ACTIVE_IF_EQUALS_TO)
+    counterName
+  }
+
+  private def toProperty(counterName: String,activationCount: Int,comparator:String):Property = {
+    Property(counterName,0,comparator,activationCount)
   }
 
   val countProperties: mutable.Map[AchievementCounterType.Value, mutable.Map[String, Property]] = initPropertyCount

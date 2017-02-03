@@ -130,6 +130,44 @@ object AchievementDefinitions {
       * Einmalig
       */
     //glueckspils
+    AchievementConstraints(
+      Achievement(
+        "Glückspils",
+        "25. Bier bestellt",
+        "/internal/assets/achievements/glueckspils.png"
+      ),
+      List(BEER_ALL countEquals  25)
+    ),
+    AchievementConstraints(
+      Achievement(
+        "Es geht seinen Gang",
+        "50. Bier bestellt",
+        "/internal/assets/achievements/esgehtseinengang.png"
+      ),
+      List(BEER_ALL countEquals  50)
+    ),
+    AchievementConstraints(
+      Achievement(
+        "Veni Vidi Bieri",
+        "100. Bier bestellt",
+        "/internal/assets/achievements/venividibieri.png"
+      ),
+      List(BEER_ALL countEquals  100)
+    ),AchievementConstraints(
+      Achievement(
+        "Halbzeit",
+        "150. Bier bestellt",
+        "/internal/assets/achievements/halbzeit.jpg"
+      ),
+      List(BEER_ALL countEquals  150)
+    ),AchievementConstraints(
+      Achievement(
+        "This is Sparta!",
+        "300. Bier bestellt",
+        "/internal/assets/achievements/thisissparta.jpg"
+      ),
+      List(BEER_ALL countEquals 300)
+    ),
     // es geht seinen gang
     // Veni Vidi Bieri
     // Halbzeit
