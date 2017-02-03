@@ -143,7 +143,7 @@ object AchievementDefinitions {
         "25. Bier bestellt",
         "/internal/assets/achievements/glueckspils.png"
       ),
-      List((BEER,ALL) countHigherOrEqualThan 25)
+      List((BEER,ALL) countEquals  25)
     ),
     AchievementConstraints(
       Achievement(
@@ -151,7 +151,7 @@ object AchievementDefinitions {
         "50. Bier bestellt",
         "/internal/assets/achievements/esgehtseinengang.png"
       ),
-      List((BEER,ALL) countHigherOrEqualThan 50)
+      List((BEER,ALL) countEquals 50)
     ),
     AchievementConstraints(
       Achievement(
@@ -159,21 +159,21 @@ object AchievementDefinitions {
         "100. Bier bestellt",
         "/internal/assets/achievements/venividibieri.png"
       ),
-      List((BEER,ALL) countHigherOrEqualThan 100)
+      List((BEER,ALL) countEquals 100)
     ),AchievementConstraints(
       Achievement(
         "Halbzeit",
         "150. Bier bestellt",
         "/internal/assets/achievements/halbzeit.jpg"
       ),
-      List((BEER,ALL) countHigherOrEqualThan 150)
+      List((BEER,ALL) countEquals 150)
     ),AchievementConstraints(
       Achievement(
         "This is Sparta!",
         "300. Bier bestellt",
         "/internal/assets/achievements/thisissparta.jpg"
       ),
-      List((BEER,ALL) countHigherOrEqualThan 300)
+      List((BEER,ALL) countEquals 300)
     ),
     /**
       * Mix
@@ -217,6 +217,14 @@ object AchievementDefinitions {
         "/internal/assets/achievements/luftalarm.jpg"
       ),
       List(("Berliner Luft",AT_ONCE) countHigherOrEqualThan 5)
+    ),
+    AchievementConstraints(
+      Achievement(
+        "Zombieland",
+        "Mindestens 3 Zombies bestellt",
+        "/internal/assets/achievements/zombieland.jpg"
+      ),
+      List(("Zombie",USER) countHigherOrEqualThan 3)
     )
     //Luftalarm*/
   )

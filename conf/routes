@@ -14,6 +14,7 @@ POST          /api/drinks/:drinkType        drinks.DrinkController.saveDrink(dri
 
 # achievements
 GET           /api/user/achievements        achievements.AchievementController.getAchievements
+GET           /api/achievements/sync        achievements.AchievementController.syncAchievements
 
 #Websocket
 GET           /api/socket                   websocket.WebsocketController.socket

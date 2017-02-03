@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit
 import achievements.actors.UserAchievementActor
 import achievements.actors.UserAchievementActor.ProcessDrinkNews
 import achievements.repos.AchievementsRepository
-import akka.actor.{ActorNotFound, ActorRef, ActorSystem}
+import akka.actor.{ActorNotFound, ActorRef, ActorSystem, PoisonPill}
 import akka.util.Timeout
 import com.google.inject.name.Named
 import com.google.inject.{Inject, Singleton}
@@ -26,6 +26,10 @@ class AchievementService @Inject()(
                                     websocketService: WebsocketService
                                   )(implicit ec: ExecutionContext) {
   implicit val timeout = Timeout(20, TimeUnit.SECONDS)
+
+  def killAllActors: Unit ={
+    system.actorSelection(system / "*") ! PoisonPill
+  }
 
   def notifyAchievements(newsList: List[News]): Future[Unit] = {
     newsRepository.getStatsForAll.flatMap { newsStats =>
