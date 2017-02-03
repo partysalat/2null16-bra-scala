@@ -100,6 +100,17 @@ class NewsRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPro
         news.map(item => item)
       })
   }
+  def getAchievementsForUser(userId:Int): Future[List[Achievement]] = db.run {
+    val joinQuery = for {
+      (_, achievement) <- news.filter(_.`newsType` === NewsType.ACHIEVEMENT).filter(_.userId === userId) joinLeft achievements on (_.achievementId === _.id)
+    } yield achievement
+
+    joinQuery
+      .to[List].result
+      .map((achievements: List[Option[Achievement]]) => {
+        achievements.map(_.get)
+      })
+  }
 
   def getNewsByIds(ids:Seq[Int]): Future[List[NewsWithItems]] =db.run{
     val joinQuery = for {

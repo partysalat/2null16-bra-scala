@@ -115,13 +115,16 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats,statsForAll:NewsSta
     initCounter(countProperties(SHOT_ALL), statsForAll.shotCount.getOrElse(0))
     initCounter(countProperties(SOFTDRINK_ALL), statsForAll.softdrinkCount.getOrElse(0))
 
+    initCounter(countProperties(DRINK_COUNT_AT_ONCE), 0)
+    initCounter(countProperties(BEER_AT_ONCE), 0)
     initCounter(countProperties(SHOT_AT_ONCE), 0)
+    initCounter(countProperties(COCKTAIL_AT_ONCE), 0)
+    initCounter(countProperties(SOFTDRINK_AT_ONCE), 0)
 
     Logger.info(s"Initial property values ${achievementMetrics.properties}")
 
-    val previousAchievements = achievementMetrics.checkAchievements
-    Logger.debug(s"Initial unlocked achievements: ${previousAchievements.toString()}")
-    Future.successful((): Unit)
+    newsRepository.getAchievementsForUser(userId)
+      .map(achievementMetrics.unlockReachedAchievements)
   }
 
   private def initCounter(properties: mutable.Map[String, Property], value: Int) = {

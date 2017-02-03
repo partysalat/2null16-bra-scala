@@ -61,6 +61,14 @@ case class AchievementMetrics(
     Logger.info(unlockedAchievements.toString)
     unlockedAchievements
   }
+  def unlockReachedAchievements(reachedAchievements:List[Achievement]): Unit ={
+    val reachedAchievementNames = reachedAchievements.map(_.name)
+    achievements
+      .filter(ac=>reachedAchievementNames.contains(ac._1))
+      .foreach {
+        case (_, achievementConstraint) => unlockAchievement(achievementConstraint)
+      }
+  }
 }
 
 case class AchievementConstraints(
