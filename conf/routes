@@ -1,32 +1,34 @@
 # user
-GET           /api/user                     users.UserController.getUsers
-POST          /api/user                     users.UserController.createUser
+GET           /api/user                      users.UserController.getUsers
+POST          /api/user                      users.UserController.createUser
 
 #news
-GET           /api/news/:skip               news.NewsController.getNews(skip:Int)
-GET           /api/user/bestlist            news.NewsController.getBestlistNews
-POST          /api/drinks                   news.NewsController.createDrinkNews
-DELETE        /api/news/item/:newsId        news.NewsController.removeNews(newsId:Int)
+GET           /api/news/:skip                news.NewsController.getNews(skip:Int)
+GET           /api/user/bestlist             news.NewsController.getBestlistNews
+POST          /api/drinks                    news.NewsController.createDrinkNews
+DELETE        /api/news/item/:newsId         news.NewsController.removeNews(newsId:Int)
 
 #drink
-GET           /api/drinks/:drinkType        drinks.DrinkController.getDrinks(drinkType:String)
-POST          /api/drinks/:drinkType        drinks.DrinkController.saveDrink(drinkType:String)
+GET           /api/drinks/:drinkType         drinks.DrinkController.getDrinks(drinkType:String)
+POST          /api/drinks/:drinkType         drinks.DrinkController.saveDrink(drinkType:String)
 
 # achievements
-GET           /api/user/achievements        achievements.AchievementController.getAchievements
+GET           /api/user/achievements         achievements.AchievementController.getAchievements
 
 
 #Websocket
-GET           /api/socket                   websocket.WebsocketController.socket
+GET           /api/socket                    websocket.WebsocketController.socket
 
 # views
-GET           /                             common.HomeController.index
-GET           /assets/*file                 controllers.Assets.versioned(path="/public", file: Asset)
+GET           /                              common.HomeController.index
+GET           /assets/*file                  controllers.Assets.versioned(path="/public", file: Asset)
 
 
 #Operational
-GET           /api/sync/achievements        achievements.AchievementController.syncAchievements
-GET           /api/sync/news/empty          news.NewsController.dropNews
+GET           /api/sync/achievements         achievements.AchievementController.syncAchievements
+GET           /api/sync/news/empty           news.NewsController.dropNews
 
 # camera
-POST           /api/photo/shoot              camera.CameraController.takePhoto
+POST          /api/photo/shoot               camera.CameraController.takePhoto
+POST          /api/photo/stream/start        camera.CameraController.startSchedule
+POST          /api/photo/stream/stop         camera.CameraController.stopSchedule

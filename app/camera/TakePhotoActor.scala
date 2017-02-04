@@ -1,20 +1,34 @@
 package camera
 
 import akka.actor.Actor
-import camera.TakePhotoActor.TakePhoto
-import com.google.inject.{Inject,Singleton}
+import camera.TakePhotoActor.{StartSchedulingPhotos, StopSchedulingPhotos, TakePhotoForStream}
+import com.google.inject.{Inject, Singleton}
 import com.google.inject.name.Named
 import com.hopding.jrpicam.RPiCamera
+import play.api.Logger
 
 
 object TakePhotoActor {
-  case class TakePhoto()
+  case class TakePhotoForStream()
+  case class StopSchedulingPhotos()
+  case class StartSchedulingPhotos()
 }
 
 @Singleton
 class TakePhotoActor @Inject()(@Named("streamFileName") streamFileName:String, piCamera:Option[RPiCamera]) extends Actor {
-  def receive = {
-    case TakePhoto() => piCamera.map(_.takeStill(streamFileName))
+  def receive = idle
+
+  def available:Receive = {
+    case TakePhotoForStream() =>
+      Logger.info(s"TAKE PHTOO ${context.toString}")
+
+      piCamera.map(_.takeStill(streamFileName))
+    case StopSchedulingPhotos() => context.become(idle)
+    case _ => ()
   }
 
+  def idle:Receive = {
+    case StartSchedulingPhotos() => context.become(available)
+    case _ => ()
+  }
 }
