@@ -21,7 +21,7 @@ class CameraModule extends AbstractModule with AkkaGuiceSupport{
       val camera = new RPiCamera(config.getString("camera.path"))
       camera.setWidth(500)
       camera.setHeight(281)
-      camera.setTimeout(1)
+      camera.setTimeout(0)
       camera.turnOffThumbnail()
       camera.enableBurst()
       camera.setQuality(50)
@@ -29,7 +29,7 @@ class CameraModule extends AbstractModule with AkkaGuiceSupport{
       Some(camera)
     } catch {
       case e: Throwable =>
-        Logger.info(s"Camera could not be initialized due to ${e.toString}")
+        Logger.warn(s"Camera could not be initialized due to ${e.toString}")
         None
     }
   }

@@ -15,7 +15,7 @@ class PhotoScheduler @Inject() (
                                  config:Config
                                )(implicit ec: ExecutionContext)
 {
-  val interval = config.getInt("camera.streamTimeout")
+  val interval: Int = config.getInt("camera.streamTimeout")
   system.scheduler.schedule(
-    0.microseconds, interval.seconds, schedulerActor, TakePhotoForStream())
+    0.microseconds, interval.milliseconds, schedulerActor, TakePhotoForStream())
 }
