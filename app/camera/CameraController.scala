@@ -13,6 +13,7 @@ class CameraController @Inject()(piCamera:Option[RPiCamera])(implicit exec: Exec
   val logger: Logger = Logger(this.getClass)
   def takePhoto=Action {
     piCamera.map(_.takeStill("tmp.jpg"))
+
     Ok("Photo shoot!")
   }
 

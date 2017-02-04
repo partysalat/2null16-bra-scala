@@ -12,12 +12,15 @@ class CameraModule extends AbstractModule {
 
   @Provides
   @Singleton
-  def getCamera(): Option[RPiCamera] = {
+  def getCamera(config:Config): Option[RPiCamera] = {
     try {
-      val camera = new RPiCamera("./")
+      val camera = new RPiCamera(config.getString("camera.path"))
       camera.setWidth(500)
       camera.setHeight(500)
-      camera.setTimeout(2)
+      camera.setTimeout(500)
+      camera.enableBurst()
+      camera.setQuality(75)
+
       Some(camera)
     } catch {
       case e: Throwable =>

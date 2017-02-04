@@ -29,4 +29,4 @@ GET           /api/sync/achievements        achievements.AchievementController.s
 GET           /api/sync/news/empty          news.NewsController.dropNews
 
 # camera
-GET           /api/photo/shoot              camera.CameraController.takePhoto
+POST           /api/photo/shoot              camera.CameraController.takePhoto
