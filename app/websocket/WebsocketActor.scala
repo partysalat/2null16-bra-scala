@@ -9,6 +9,7 @@ object WebsocketActor {
   def props(manager:WebsocketManager,out: ActorRef) = Props(new WebsocketActor(manager,out))
   case class NotifyNews(newsWithItems:List[NewsWithItems])
   case class NotifyNewsRemove(newsId:Int)
+  case class NotifyReloadImage()
 }
 
 class WebsocketActor(manager: WebsocketManager,out: ActorRef) extends Actor {
@@ -26,6 +27,8 @@ class WebsocketActor(manager: WebsocketManager,out: ActorRef) extends Actor {
       out ! Json.toJson(Json.arr("news",newsWithItems)).toString()
     case NotifyNewsRemove(newsId)=>
       out ! Json.toJson(Json.arr("news.delete",newsId)).toString()
+    case NotifyReloadImage()=>
+      out ! Json.toJson(Json.arr("image.reload")).toString()
     case msg: String =>
       out ! "4"
   }

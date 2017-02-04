@@ -21,10 +21,11 @@ class CameraModule extends AbstractModule with AkkaGuiceSupport{
       val camera = new RPiCamera(config.getString("camera.path"))
       camera.setWidth(500)
       camera.setHeight(281)
-      //camera.setTimeout(2)
+      camera.setTimeout(1)
+      camera.turnOffThumbnail()
       camera.enableBurst()
       camera.setQuality(50)
-      //camera.turnOffPreview()
+      camera.turnOffPreview()
       Some(camera)
     } catch {
       case e: Throwable =>
