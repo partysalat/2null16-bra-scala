@@ -27,3 +27,6 @@ GET           /assets/*file                 controllers.Assets.versioned(path="/
 #Operational
 GET           /api/sync/achievements        achievements.AchievementController.syncAchievements
 GET           /api/sync/news/empty          news.NewsController.dropNews
+
+# camera
+GET           /api/photo/shoot              camera.CameraController.takePhoto

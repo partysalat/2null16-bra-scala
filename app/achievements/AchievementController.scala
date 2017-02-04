@@ -3,7 +3,6 @@ package achievements
 import achievements.models.AchievementsResponse
 import achievements.repos.AchievementsRepository
 import achievements.services.AchievementService
-import akka.actor.ActorSystem
 import com.google.inject.{Inject, Singleton}
 import news.repos.NewsRepository
 import play.api.Logger
