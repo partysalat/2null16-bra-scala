@@ -4,6 +4,7 @@ POST          /api/user                      users.UserController.createUser
 
 #news
 GET           /api/news/:skip                news.NewsController.getNews(skip:Int)
+GET           /api/user/bestlist/csv         news.NewsController.downloadNewslistAsCSV
 GET           /api/user/bestlist             news.NewsController.getBestlistNews
 POST          /api/drinks                    news.NewsController.createDrinkNews
 DELETE        /api/news/item/:newsId         news.NewsController.removeNews(newsId:Int)

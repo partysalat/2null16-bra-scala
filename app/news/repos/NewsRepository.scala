@@ -132,6 +132,16 @@ class NewsRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPro
   def emptyTable = db.run {
     news.delete
   }
+
+  def getDrinkNews = db.run {
+    val drinkQuery = news.filter(_.newsType === NewsType.DRINK)
+    val joinQuery = for {
+      ((newsItem, user), drink) <- drinkQuery joinLeft users on (_.userId === _.id) joinLeft drinks on (_._1.drinkId === _.id)
+    } yield (newsItem, user, drink)
+    joinQuery
+      .sortBy(_._1.createdAt.desc)
+      .to[List].result
+  }
 }
 
 
