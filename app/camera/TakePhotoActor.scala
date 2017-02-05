@@ -1,10 +1,15 @@
 package camera
 
+import java.awt.image.BufferedImage
+import java.io.ByteArrayOutputStream
+import javax.imageio.ImageIO
+
 import akka.actor.Actor
 import camera.TakePhotoActor.{StartSchedulingPhotos, StopSchedulingPhotos, TakePhotoForStream}
 import com.google.inject.{Inject, Singleton}
 import com.google.inject.name.Named
 import com.hopding.jrpicam.RPiCamera
+import com.migcomponents.migbase64.Base64
 import play.api.Logger
 import websocket.WebsocketService
 
@@ -28,8 +33,11 @@ class TakePhotoActor @Inject()(
       Logger.info(s"TAKE PHTOO ${context.toString}")
 
       piCamera
-        .map(_.takeStill(streamFileName))
-        .foreach(_=>websocketService.notifyReloadPhotoStream())
+        .map(camera => {
+           Option(camera.takeBufferedStill())
+        })
+        .map(toBase64)
+        .foreach(base64ImageString=>websocketService.notifyReloadPhotoStream(base64ImageString))
     case StopSchedulingPhotos() => context.become(idle)
     case _ => ()
   }
@@ -37,5 +45,13 @@ class TakePhotoActor @Inject()(
   def idle:Receive = {
     case StartSchedulingPhotos() => context.become(available)
     case _ => ()
+  }
+  def toBase64(image:Option[BufferedImage]) ={
+    image.map({bufferedImg=>
+      val out:ByteArrayOutputStream = new ByteArrayOutputStream()
+      ImageIO.write(bufferedImg,"jpg",out)
+      Base64.encodeToString(out.toByteArray,false)
+    }).getOrElse("<NO image >")
+
   }
 }

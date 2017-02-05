@@ -29,7 +29,7 @@ class WebsocketService @Inject()( @Named("websocketSystem") implicit val system:
     manager.broadcast(NotifyNewsRemove(newsId))
   }
 
-  def notifyReloadPhotoStream(): Unit ={
-    manager.broadcast(NotifyReloadImage())
+  def notifyReloadPhotoStream(base64Image:String): Unit ={
+    manager.broadcast(NotifyReloadImage(base64Image))
   }
 }
