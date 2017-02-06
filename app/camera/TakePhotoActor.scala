@@ -59,19 +59,27 @@ class TakePhotoActor @Inject()(
 
   private def takePhotoForNewsFeed: Unit = {
     val fileName = s"${UUID.randomUUID().toString}.jpg"
+    Logger.info(s"Taking photo with name $fileName")
     Future(takePhoto(fileName))
-
-      .flatMap(_=>newsImagesRepository.insert(NewsImage(fileName)))
-      .flatMap(imageId => newsReposity.insert(News(1, NewsType.IMAGE, referenceId = imageId)))
-      .foreach(newsIds => websocketService.notify(Seq(newsIds)))
-    //.foreach()
+      .flatMap(_=>{
+        Logger.info(s"Insert Image ${NewsImage(fileName)}")
+        newsImagesRepository.insertAll(List(NewsImage(fileName))).map(_.head)
+      })
+      .flatMap(imageId => {
+        val news = News(1, NewsType.IMAGE, referenceId = imageId)
+        Logger.info(s"Inserted image with news: $news")
+        newsReposity.insert(News(1, NewsType.IMAGE, referenceId = imageId))
+      })
+      .foreach(newsIds => {
+        Logger.info(s"Notify newsId $newsIds ")
+        websocketService.notify(Seq(newsIds))
+      })
   }
 
   private def takePhoto(fileName: String): Option[File] = {
     piCamera.flatMap(camera =>
       Option(camera.takeStill(fileName))
     )
-    //.filter(_.isDefined)
   }
 
   private def takeBufferedImageAndPushToClients: Unit = {

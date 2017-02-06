@@ -1,6 +1,7 @@
 package news.models
 
 import achievements.models.Achievement
+import camera.models.NewsImage
 import drinks.models.Drink
 import news.models.NewsType.NewsType
 import org.joda.time.DateTime
@@ -46,14 +47,15 @@ case class UserNews(id: Int, cardinality: Int)
 object UserNews {
   implicit val userNewsFormat: Format[UserNews] = Json.format[UserNews]
 }
-case class NewsWithItems(news:News,user:Option[User], drink:Option[Drink]=None, achievement:Option[Achievement]= None)
+case class NewsWithItems(news:News,user:Option[User], drink:Option[Drink]=None, achievement:Option[Achievement]= None, image:Option[NewsImage]=None)
 object NewsWithItems {
   implicit val newsWithItemsFormat: Reads[NewsWithItems] = Json.reads[NewsWithItems]
   implicit val newsWithItemsWrites: Writes[NewsWithItems] = (
     JsPath.write[News] and
       (JsPath \ "user").write[Option[User]] and
       (JsPath \ "drink").write[Option[Drink]] and
-      (JsPath \ "achievement").write[Option[Achievement]]
+      (JsPath \ "achievement").write[Option[Achievement]] and
+      (JsPath \ "image").write[Option[NewsImage]]
     )(unlift(NewsWithItems.unapply))
   /*implicit val newsWithItemsWrites: Writes[NewsWithItems] = Writes[NewsWithItems] { item =>
 

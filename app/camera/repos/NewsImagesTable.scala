@@ -18,7 +18,7 @@ trait NewsImagesTable extends BaseTable {
 
   private[NewsImagesTable] class NewsImagesTable(tag: Tag) extends Table[NewsImage](tag, "images") {
     val id: Rep[Int] = column[Int]("id", O.AutoInc, O.PrimaryKey)
-    val path: Rep[String] = column[String]("name", O.SqlType("VARCHAR(200)"))
+    val path: Rep[String] = column[String]("path", O.SqlType("VARCHAR(200)"))
     val createdAt: Rep[DateTime] = column[DateTime]("createdAt", O.SqlType("date"))
     val updatedAt: Rep[DateTime] = column[DateTime]("updatedAt", O.SqlType("date"))
 

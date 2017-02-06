@@ -2,6 +2,7 @@ package news.repos
 
 import achievements.models.Achievement
 import achievements.repos.AchievementsTable
+import camera.repos.NewsImagesTable
 import com.google.inject.{Inject, Singleton}
 import drinks.models.Drink
 import drinks.repos.DrinksTable
@@ -15,7 +16,7 @@ import users.repos.UsersTable
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton()
-class NewsRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) extends NewsTable with UsersTable with DrinksTable with AchievementsTable with HasDatabaseConfigProvider[JdbcProfile] {
+class NewsRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) extends NewsTable with UsersTable with DrinksTable with AchievementsTable with NewsImagesTable with HasDatabaseConfigProvider[JdbcProfile] {
 
   import driver.api._
 
@@ -31,16 +32,16 @@ class NewsRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPro
 
   def getAll(skip: Int, limit:Int = PAGE_SIZE): Future[List[NewsWithItems]] = db.run {
     val joinQuery = for {
-      (((newsItem, user), drink), achievement) <- news joinLeft users on (_.userId === _.id) joinLeft drinks on (_._1.referenceId === _.id) joinLeft achievements on (_._1._1.referenceId === _.id)
-    } yield (newsItem, user, drink, achievement)
+      ((((newsItem, user), drink), achievement), newsImages) <- news joinLeft users on (_.userId === _.id) joinLeft drinks on (_._1.referenceId === _.id) joinLeft achievements on (_._1._1.referenceId === _.id) joinLeft newsImages on (_._1._1._1.referenceId === _.id)
+    } yield (newsItem, user, drink, achievement, newsImages)
 
     joinQuery
       .sortBy(_._1.createdAt.desc)
       .drop(skip)
       .take(limit)
       .to[List].result
-      .map((news: List[(News, Option[User], Option[Drink], Option[Achievement])]) => {
-        news.map(item => NewsWithItems(item._1, item._2, item._3, item._4))
+      .map((news) => {
+        news.map(item => NewsWithItems(item._1, item._2, item._3, item._4,item._5))
       })
   }
 
@@ -114,14 +115,14 @@ class NewsRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPro
 
   def getNewsByIds(ids:Seq[Int]): Future[List[NewsWithItems]] =db.run{
     val joinQuery = for {
-      (((newsItem, user), drink), achievement) <- news.filter(_.id inSetBind ids) joinLeft users on (_.userId === _.id) joinLeft drinks on (_._1.referenceId === _.id) joinLeft achievements on (_._1._1.referenceId === _.id)
-    } yield (newsItem, user, drink, achievement)
+      ((((newsItem, user), drink), achievement),image) <- news.filter(_.id inSetBind ids) joinLeft users on (_.userId === _.id) joinLeft drinks on (_._1.referenceId === _.id) joinLeft achievements on (_._1._1.referenceId === _.id) joinLeft newsImages on (_._1._1._1.referenceId === _.id)
+    } yield (newsItem, user, drink, achievement, image)
 
     joinQuery
       .sortBy(_._1.createdAt.desc)
       .to[List].result
-      .map((news: List[(News, Option[User], Option[Drink], Option[Achievement])]) => {
-        news.map(item => NewsWithItems(item._1, item._2, item._3, item._4))
+      .map((news) => {
+        news.map(item => NewsWithItems(item._1, item._2, item._3, item._4,item._5))
       })
   }
 
