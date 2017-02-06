@@ -27,7 +27,7 @@ su - pi -c <FULL_PATH_TO_SCRIPT>/start.sh &
 
 
 # TODO
-* live photo stream
-* add all achievements and a little bit more
-* remove coffee and take photo card
-* Download as CSV
+
+* add a little bit more achievements
+* INDEX on some fields
+* Add photo news functionality

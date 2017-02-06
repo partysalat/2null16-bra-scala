@@ -126,7 +126,6 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats,statsForAll:NewsSta
 
     AchievementDrinkType.values.foreach(drinkType=>initCounter(countProperties(drinkType)(AT_ONCE), 0))
 
-    Logger.info(s"Initial property values ${achievementMetrics.properties}")
 
     newsRepository.getAchievementsForUser(userId)
       .map(achievementMetrics.unlockReachedAchievements)

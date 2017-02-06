@@ -13,12 +13,12 @@ object NewsType extends Enumeration {
   type NewsType = Value
   val DRINK = Value("DRINK")
   val ACHIEVEMENT = Value("ACHIEVEMENT")
+  val IMAGE = Value("IMAGE")
 
   implicit val newsTypeFormat = new Format[NewsType] {
     def reads(json: JsValue) = JsSuccess(NewsType.withName(json.as[String]))
     def writes(enum: NewsType) = JsString(enum.toString)
   }
-  //implicit val newsTypeFormat: Format[NewsType] = Json.format[NewsType]
 }
 
 case class News(

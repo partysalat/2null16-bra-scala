@@ -35,12 +35,20 @@ create table "news" (
   FOREIGN KEY(userId) REFERENCES users(id)
   );
 
+create table "images" (
+  "id" INTEGER PRIMARY KEY,
+  "path" VARCHAR,
+  "createdAt" DATETIME NOT NULL,
+  "updatedAt" DATETIME NOT NULL
+  );
+
 # --- !Downs
 
 drop table "users";
 drop table "achievements";
 drop table "drinks";
 drop table "news";
+drop table "images";
 
 
 
