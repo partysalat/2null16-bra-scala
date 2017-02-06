@@ -41,7 +41,7 @@ class NewsController @Inject()(@Named("websocketSystem") websocketActorSystem: A
   def createDrinkNews = Action.async(parse.json[CreateDrinkNewsDto]) { request =>
     val drinkId = request.body.drink
     val newsList: List[News] = request.body.users.map(userNews => {
-      News(userNews.cardinality, NewsType.DRINK, userId = Some(userNews.id), drinkId = Some(drinkId))
+      News(userNews.cardinality, NewsType.DRINK, userId = Some(userNews.id), referenceId = drinkId)
     })
 
     achievementService.notifyAchievements(newsList).flatMap { _ =>

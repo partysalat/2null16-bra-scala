@@ -31,11 +31,8 @@ create table "news" (
   "createdAt" DATETIME NOT NULL,
   "updatedAt" DATETIME NOT NULL,
   "userId" VARCHAR,
-  "drinkId" VARCHAR ,
-  "achievementId" VARCHAR,
-  FOREIGN KEY(userId) REFERENCES users(id),
-  FOREIGN KEY(drinkId) REFERENCES drinks(id),
-  FOREIGN KEY(achievementId) REFERENCES achievements(id)
+  "referenceId" VARCHAR,
+  FOREIGN KEY(userId) REFERENCES users(id)
   );
 
 # --- !Downs

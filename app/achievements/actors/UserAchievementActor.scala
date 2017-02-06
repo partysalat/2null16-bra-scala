@@ -51,7 +51,7 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats,statsForAll:NewsSta
   def normalReceive: Receive = {
     case ProcessDrinkNews(news) if news.userId.contains(userId) && news.`type` == NewsType.DRINK =>
       Logger.debug(s"actor $userId received news $news")
-      Logger.info(s"User $userId has drink with id ${news.drinkId}")
+      Logger.info(s"User $userId has drink with id ${news.referenceId}")
 
       increaseCounters(news)
         .flatMap(_=> increaseAllCounters(news))
@@ -69,7 +69,7 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats,statsForAll:NewsSta
       .getByNames(unlockedAchievements.map(_.achievement.name))
       .flatMap {
         achievements: List[Achievement] => {
-          val achievementNewsList = achievements.map(achievement => News(1, NewsType.ACHIEVEMENT, userId = Some(userId), achievementId = achievement.id))
+          val achievementNewsList = achievements.map(achievement => News(1, NewsType.ACHIEVEMENT, userId = Some(userId), referenceId = achievement.id.get))
           newsRepository.insertAll(achievementNewsList)
         }
       }.map(websocketService.notify)
@@ -80,7 +80,7 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats,statsForAll:NewsSta
     import AchievementDrinkType._
     import Property._
     achievementMetrics.addValues(countProperties(DRINK_COUNT)(ALL).keySet.toList, news.cardinality)
-    drinksRepository.getById(news.drinkId.get)
+    drinksRepository.getById(news.referenceId)
       .map { drink =>
         achievementMetrics.addValues(countProperties(drink.`type`.toCounterType)(ALL).keySet.toList, news.cardinality,Some(drink.name))
         achievementMetrics.addValues(countProperties(CUSTOM)(ALL).keySet.toList, news.cardinality,Some(drink.name))
@@ -92,7 +92,7 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats,statsForAll:NewsSta
     import AchievementDrinkType._
     import Property._
     achievementMetrics.addValues(countProperties(DRINK_COUNT)(USER).keySet.toList, news.cardinality)
-    drinksRepository.getById(news.drinkId.get)
+    drinksRepository.getById(news.referenceId)
       .map { drink =>
         achievementMetrics.addValues(countProperties(drink.`type`.toCounterType)(USER).keySet.toList, news.cardinality,Some(drink.name))
         achievementMetrics.setValues(countProperties(drink.`type`.toCounterType)(AT_ONCE).keySet.toList, news.cardinality,Some(drink.name))

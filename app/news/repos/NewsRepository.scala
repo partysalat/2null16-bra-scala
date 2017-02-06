@@ -31,7 +31,7 @@ class NewsRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPro
 
   def getAll(skip: Int, limit:Int = PAGE_SIZE): Future[List[NewsWithItems]] = db.run {
     val joinQuery = for {
-      (((newsItem, user), drink), achievement) <- news joinLeft users on (_.userId === _.id) joinLeft drinks on (_._1.drinkId === _.id) joinLeft achievements on (_._1._1.achievementId === _.id)
+      (((newsItem, user), drink), achievement) <- news joinLeft users on (_.userId === _.id) joinLeft drinks on (_._1.referenceId === _.id) joinLeft achievements on (_._1._1.referenceId === _.id)
     } yield (newsItem, user, drink, achievement)
 
     joinQuery
@@ -59,7 +59,7 @@ class NewsRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPro
        `user`.`id` AS `user.id`
      FROM news AS `news`
      LEFT OUTER JOIN `users` AS `user` ON `news`.`userId` = `user`.`id`
-     LEFT OUTER JOIN `drinks` AS `drink` ON `news`.`drinkId` = `drink`.`id`
+     LEFT OUTER JOIN `drinks` AS `drink` ON `news`.`referenceId` = `drink`.`id`
     """
 
   def getStats: Future[List[NewsStats]] = {
@@ -90,7 +90,7 @@ class NewsRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPro
   def getAchievements: Future[List[(News, Option[User], Option[Achievement])]] = db.run {
     val achievementNews = news.filter(_.`newsType` === NewsType.ACHIEVEMENT)
     val joinQuery = for {
-      ((newsItem, user), achievements) <- achievementNews joinLeft users on (_.userId === _.id) joinLeft achievements on (_._1.achievementId === _.id)
+      ((newsItem, user), achievements) <- achievementNews joinLeft users on (_.userId === _.id) joinLeft achievements on (_._1.referenceId === _.id)
     } yield (newsItem, user, achievements)
 
     joinQuery
@@ -102,7 +102,7 @@ class NewsRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPro
   }
   def getAchievementsForUser(userId:Int): Future[List[Achievement]] = db.run {
     val joinQuery = for {
-      (_, achievement) <- news.filter(_.`newsType` === NewsType.ACHIEVEMENT).filter(_.userId === userId) joinLeft achievements on (_.achievementId === _.id)
+      (_, achievement) <- news.filter(_.`newsType` === NewsType.ACHIEVEMENT).filter(_.userId === userId) joinLeft achievements on (_.referenceId === _.id)
     } yield achievement
 
     joinQuery
@@ -114,7 +114,7 @@ class NewsRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPro
 
   def getNewsByIds(ids:Seq[Int]): Future[List[NewsWithItems]] =db.run{
     val joinQuery = for {
-      (((newsItem, user), drink), achievement) <- news.filter(_.id inSetBind ids) joinLeft users on (_.userId === _.id) joinLeft drinks on (_._1.drinkId === _.id) joinLeft achievements on (_._1._1.achievementId === _.id)
+      (((newsItem, user), drink), achievement) <- news.filter(_.id inSetBind ids) joinLeft users on (_.userId === _.id) joinLeft drinks on (_._1.referenceId === _.id) joinLeft achievements on (_._1._1.referenceId === _.id)
     } yield (newsItem, user, drink, achievement)
 
     joinQuery
@@ -136,7 +136,7 @@ class NewsRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPro
   def getDrinkNews = db.run {
     val drinkQuery = news.filter(_.newsType === NewsType.DRINK)
     val joinQuery = for {
-      ((newsItem, user), drink) <- drinkQuery joinLeft users on (_.userId === _.id) joinLeft drinks on (_._1.drinkId === _.id)
+      ((newsItem, user), drink) <- drinkQuery joinLeft users on (_.userId === _.id) joinLeft drinks on (_._1.referenceId === _.id)
     } yield (newsItem, user, drink)
     joinQuery
       .sortBy(_._1.createdAt.desc)
