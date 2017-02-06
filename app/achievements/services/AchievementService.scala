@@ -27,19 +27,19 @@ class AchievementService @Inject()(
                                   )(implicit ec: ExecutionContext) {
   implicit val timeout = Timeout(20, TimeUnit.SECONDS)
 
-  def killAllActors: Unit ={
+  def killAllActors: Unit = {
     system.actorSelection(system / "*") ! PoisonPill
   }
 
   def notifyAchievements(newsList: List[News]): Future[Unit] = {
-    newsRepository.getStatsForAll.flatMap { newsStats =>
-      Logger.debug("Get stats for all from newsRepo, initializing actors....")
-      Future
-        .sequence(
-          newsList.filter(_.userId.isDefined).map(ensureActorIsCreated(_, newsStats))
-        )
-        .map(_ => notifyEm(newsList))
-    }
+
+    Logger.debug("Get stats for all from newsRepo, initializing actors....")
+    Future
+      .sequence(
+        newsList.filter(_.userId.isDefined).map(ensureActorIsCreated)
+      )
+      .map(_ => notifyEm(newsList))
+
   }
 
   private def notifyEm(newsList: List[News]) = {
@@ -48,14 +48,15 @@ class AchievementService @Inject()(
       .foreach(drinkNews => system.actorSelection(system / "*") ! drinkNews)
   }
 
-  private def ensureActorIsCreated(news: News, statsForAll: NewsStats): Future[ActorRef] = {
+  private def ensureActorIsCreated(news: News): Future[ActorRef] = {
     val actorId = news.userId.get.toString
     system.actorSelection(system / actorId).resolveOne()
       .recoverWith({
         case ActorNotFound(_) =>
-          Logger.info(s"No actor found for $actorId")
+          Logger.info(s"No actor found for $actorId, creating one ...")
           for {
             statsForUser <- newsRepository.getStatsForUser(news.userId.get)
+            statsForAll <- newsRepository.getStatsForAll
           } yield system.actorOf(UserAchievementActor.props(news.userId.get, statsForUser, statsForAll, newsRepository, drinksRepository, achievementsRepository, websocketService), name = actorId)
       })
 
