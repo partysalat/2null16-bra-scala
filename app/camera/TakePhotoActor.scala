@@ -46,7 +46,9 @@ class TakePhotoActor @Inject()(
   def available: Receive = {
     case TakePhotoForStream() => takeBufferedImageAndPushToClients
     case StopSchedulingPhotos() => context.become(idle)
-    case TakePhotoForNewsFeed() => takePhotoForNewsFeed
+    case TakePhotoForNewsFeed() =>
+      context.become(onHold)
+      takePhotoForNewsFeed.onComplete(_ => context.become(available))
     case _ => ()
   }
 
@@ -56,8 +58,12 @@ class TakePhotoActor @Inject()(
     case _ => ()
   }
 
+  def onHold: Receive = {
+    case _ => ()
+  }
 
-  private def takePhotoForNewsFeed: Unit = {
+
+  private def takePhotoForNewsFeed: Future[Unit] = {
     val fileName = s"${UUID.randomUUID().toString}.jpg"
     Logger.info(s"Taking photo with name $fileName")
     Future(takePhoto(fileName))
@@ -70,7 +76,7 @@ class TakePhotoActor @Inject()(
         Logger.info(s"Inserted image with news: $news")
         newsReposity.insert(News(1, NewsType.IMAGE, referenceId = imageId))
       })
-      .foreach(newsIds => {
+      .map(newsIds => {
         Logger.info(s"Notify newsId $newsIds ")
         websocketService.notify(Seq(newsIds))
       })
@@ -78,7 +84,7 @@ class TakePhotoActor @Inject()(
 
   private def takePhoto(fileName: String): Option[File] = {
     piCamera.flatMap(camera =>
-      Option(camera.takeStill(fileName))
+      Option(camera.takeStill(fileName,1024,768))
     )
   }
 
