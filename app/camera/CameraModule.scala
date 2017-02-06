@@ -24,7 +24,7 @@ class CameraModule extends AbstractModule with AkkaGuiceSupport{
       camera.setTimeout(1)
       camera.turnOffThumbnail()
       camera.enableBurst()
-      camera.setQuality(50)
+      camera.setQuality(75)
       camera.turnOffPreview()
       Some(camera)
     } catch {
