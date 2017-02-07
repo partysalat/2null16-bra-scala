@@ -30,9 +30,6 @@ case class AchievementMetrics(
       propertyDrinkName <- property.customDrinkName
       drinkName <- name
     } yield drinkName.contains(propertyDrinkName)
-    if (property.customDrinkName.isDefined) {
-      Logger.info(s"fooo$result")
-    }
     result.getOrElse(true)
   }
 

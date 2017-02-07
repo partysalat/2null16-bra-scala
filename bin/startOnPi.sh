@@ -10,4 +10,4 @@ rm -rf ${FOLDER}
 unzip ${ZIPFILE}
 cd ${FOLDER}
 echo "Starting server...."
-nohup ./bin/2null16-bra -J-Xms128M -J-Xmx256M -Dconfig.resource=application-pi.conf -Dhttp.port=9000 -Dplay.crypto.secret="QCY?tAnfk?aZnfui823hu8bfuiqnwk" &
+nohup ./bin/2null16-bra -J-Xms128M -J-Xmx512M -Dconfig.resource=application-pi.conf -Dhttp.port=9000 -Dplay.crypto.secret="QCY?tAnfk?aZnfui823hu8bfuiqnwk" &
