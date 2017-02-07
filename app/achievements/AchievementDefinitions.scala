@@ -20,7 +20,7 @@ object AchievementDefinitions {
         "1 Bier bestellt",
         "/internal/assets/achievements/moe.png"
       ),
-      List((BEER,USER) countHigherOrEqualThan 1)
+      List((BEER, USER) countHigherOrEqualThan 1)
     ),
     AchievementConstraints(
       Achievement(
@@ -28,7 +28,7 @@ object AchievementDefinitions {
         "5 Bier bestellt",
         "/internal/assets/achievements/lenny.png"
       ),
-      List((BEER,USER) countHigherOrEqualThan 5)
+      List((BEER, USER) countHigherOrEqualThan 5)
     ),
     AchievementConstraints(
       Achievement(
@@ -36,7 +36,7 @@ object AchievementDefinitions {
         "10 Bier bestellt",
         "/internal/assets/achievements/carl.png"
       ),
-      List((BEER,USER) countHigherOrEqualThan 10)
+      List((BEER, USER) countHigherOrEqualThan 10)
     ),
     AchievementConstraints(
       Achievement(
@@ -44,7 +44,7 @@ object AchievementDefinitions {
         "15 Bier bestellt",
         "/internal/assets/achievements/homer.png"
       ),
-      List((BEER,USER) countHigherOrEqualThan 15)
+      List((BEER, USER) countHigherOrEqualThan 15)
     ),
 
     AchievementConstraints(
@@ -53,7 +53,7 @@ object AchievementDefinitions {
         "25 Bier bestellt",
         "/internal/assets/achievements/barney.png"
       ),
-      List((BEER,USER) countHigherOrEqualThan 25)
+      List((BEER, USER) countHigherOrEqualThan 25)
     ),
 
     /**
@@ -66,7 +66,7 @@ object AchievementDefinitions {
         "1 Cocktails bestellt",
         "/internal/assets/achievements/derdude.jpg"
       ),
-      List((COCKTAIL,USER) countHigherOrEqualThan 1)
+      List((COCKTAIL, USER) countHigherOrEqualThan 1)
     ),
     AchievementConstraints(
       Achievement(
@@ -74,7 +74,7 @@ object AchievementDefinitions {
         "5 Cocktails bestellt",
         "/internal/assets/achievements/hemingway.jpg"
       ),
-      List((COCKTAIL,USER) countHigherOrEqualThan 5)
+      List((COCKTAIL, USER) countHigherOrEqualThan 5)
     ),
     AchievementConstraints(
       Achievement(
@@ -82,7 +82,7 @@ object AchievementDefinitions {
         "10 Cocktails bestellt",
         "/internal/assets/achievements/churchill.jpg"
       ),
-      List((COCKTAIL,USER) countHigherOrEqualThan 10)
+      List((COCKTAIL, USER) countHigherOrEqualThan 10)
     ),
     AchievementConstraints(
       Achievement(
@@ -90,7 +90,7 @@ object AchievementDefinitions {
         "15 Cocktails bestellt",
         "/internal/assets/achievements/georgerrmartin.jpg"
       ),
-      List((COCKTAIL,USER) countHigherOrEqualThan 15)
+      List((COCKTAIL, USER) countHigherOrEqualThan 15)
     ),
 
     /**
@@ -102,7 +102,7 @@ object AchievementDefinitions {
         "Mindestens 5 Softdrinks bestellt",
         "/internal/assets/achievements/fantaSea.jpg"
       ),
-      List((SOFTDRINK,USER) countHigherOrEqualThan 5)
+      List((SOFTDRINK, USER) countHigherOrEqualThan 5)
     ),
     AchievementConstraints(
       Achievement(
@@ -110,7 +110,7 @@ object AchievementDefinitions {
         "Mindestens 10 Softdrinks bestellt",
         "/internal/assets/achievements/cocacolaFantaSprite.jpg"
       ),
-      List((SOFTDRINK,USER) countHigherOrEqualThan 10)
+      List((SOFTDRINK, USER) countHigherOrEqualThan 10)
     ),
 
     /**
@@ -122,7 +122,7 @@ object AchievementDefinitions {
         "Mindestens 10 Shots auf einmal bestellt",
         "/internal/assets/achievements/dienaechsterundegehtaufmich.jpg"
       ),
-      List((SHOT,AT_ONCE) countHigherOrEqualThan 10)
+      List((SHOT, AT_ONCE) countHigherOrEqualThan 10)
     ),
     //Die nächste Runde geht auf mich
     //'ne Runde für alle!
@@ -143,7 +143,7 @@ object AchievementDefinitions {
         "25. Bier bestellt",
         "/internal/assets/achievements/glueckspils.png"
       ),
-      List((BEER,ALL) countEquals  25)
+      List((BEER, ALL) countEquals 25)
     ),
     AchievementConstraints(
       Achievement(
@@ -151,7 +151,7 @@ object AchievementDefinitions {
         "50. Bier bestellt",
         "/internal/assets/achievements/esgehtseinengang.png"
       ),
-      List((BEER,ALL) countEquals 50)
+      List((BEER, ALL) countEquals 50)
     ),
     AchievementConstraints(
       Achievement(
@@ -159,22 +159,23 @@ object AchievementDefinitions {
         "100. Bier bestellt",
         "/internal/assets/achievements/venividibieri.png"
       ),
-      List((BEER,ALL) countEquals 100)
-    ),AchievementConstraints(
+      List((BEER, ALL) countEquals 100)
+    ), AchievementConstraints(
       Achievement(
         "Halbzeit",
         "150. Bier bestellt",
         "/internal/assets/achievements/halbzeit.png"
       ),
-      List((BEER,ALL) countEquals 150)
-    ),AchievementConstraints(
+      List((BEER, ALL) countEquals 150)
+    ), AchievementConstraints(
       Achievement(
         "This is Sparta!",
         "300. Bier bestellt",
         "/internal/assets/achievements/thisissparta.png"
       ),
-      List((BEER,ALL) countEquals 300)
+      List((BEER, ALL) countEquals 300)
     ),
+
     /**
       * Mix
       */
@@ -184,7 +185,7 @@ object AchievementDefinitions {
         "Jeweils ein Bier, Shot und Cocktail bestellt",
         "/internal/assets/achievements/raufUndRunter.jpg"
       ),
-      List((BEER,USER) countHigherOrEqualThan 1, (SHOT,USER)  countHigherOrEqualThan 1, (COCKTAIL,USER)  countHigherOrEqualThan 1)
+      List((BEER, USER) countHigherOrEqualThan 1, (SHOT, USER) countHigherOrEqualThan 1, (COCKTAIL, USER) countHigherOrEqualThan 1)
     ),
     AchievementConstraints(
       Achievement(
@@ -192,7 +193,7 @@ object AchievementDefinitions {
         "Jeweils fünf Biere, Shots und Cocktails bestellt",
         "/internal/assets/achievements/abenteurer.jpg"
       ),
-      List((BEER,USER) countHigherOrEqualThan 5, (SHOT,USER)  countHigherOrEqualThan 5, (COCKTAIL,USER)  countHigherOrEqualThan 5)
+      List((BEER, USER) countHigherOrEqualThan 5, (SHOT, USER) countHigherOrEqualThan 5, (COCKTAIL, USER) countHigherOrEqualThan 5)
     ),
     AchievementConstraints(
       Achievement(
@@ -200,7 +201,7 @@ object AchievementDefinitions {
         "Jeweils 10 Biere, Shots und Cocktails bestellt",
         "/internal/assets/achievements/derallestrinker.jpg"
       ),
-      List((BEER,USER) countHigherOrEqualThan 10, (SHOT,USER)  countHigherOrEqualThan 10, (COCKTAIL,USER)  countHigherOrEqualThan 10)
+      List((BEER, USER) countHigherOrEqualThan 10, (SHOT, USER) countHigherOrEqualThan 10, (COCKTAIL, USER) countHigherOrEqualThan 10)
     ),
     AchievementConstraints(
       Achievement(
@@ -208,15 +209,20 @@ object AchievementDefinitions {
         "Nen Bier und nen Kurzen bestellt",
         "/internal/assets/achievements/herrengedeck.jpg"
       ),
-      List((BEER,USER) countHigherOrEqualThan 1, (SHOT,USER)  countHigherOrEqualThan 1)
+      List((BEER, USER) countHigherOrEqualThan 1, (SHOT, USER) countHigherOrEqualThan 1)
     ),
+
+    /**
+      * Drink specific
+      */
+
     AchievementConstraints(
       Achievement(
         "Luftalarm",
         "Mindestens 5 Berliner Luft bestellt",
         "/internal/assets/achievements/luftalarm.jpg"
       ),
-      List(("Berliner Luft",AT_ONCE) countHigherOrEqualThan 5)
+      List(("Berliner Luft", AT_ONCE) countHigherOrEqualThan 5)
     ),
     AchievementConstraints(
       Achievement(
@@ -224,8 +230,28 @@ object AchievementDefinitions {
         "Mindestens 3 Zombies bestellt",
         "/internal/assets/achievements/zombieland.jpg"
       ),
-      List(("Zombie",USER) countHigherOrEqualThan 3)
+      List(("Zombie", USER) countHigherOrEqualThan 3)
+    ),
+    AchievementConstraints(
+      Achievement(
+        "...den trinkt man auf Long Island so",
+        "Mindestens einen Long Island Iced Tea bestellt",
+        "/internal/assets/achievements/dentrinktmanauflongislandso.jpg"
+      ),
+      List(("Long Island Iced Tea", USER) countHigherOrEqualThan 1)
+    ),
+
+    AchievementConstraints(
+      Achievement(
+        "Anwärter des B.R.A.rabischen Frühlings",
+        "Einen Long Island Iced Tea, einen Zombie und ein Bier bestellt",
+        "/internal/assets/achievements/pseudoadmin.png"
+      ),
+      List(
+        ("Long Island Iced Tea", USER) countHigherOrEqualThan 1,
+        ("Zombie", USER) countHigherOrEqualThan 1,
+        (BEER, USER) countHigherOrEqualThan 1
+      )
     )
-    //Luftalarm*/
   )
 }
