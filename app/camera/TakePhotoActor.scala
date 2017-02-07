@@ -6,7 +6,7 @@ import java.util.UUID
 import javax.imageio.ImageIO
 
 import akka.actor.Actor
-import camera.TakePhotoActor.{StartSchedulingPhotos, StopSchedulingPhotos, TakePhotoForNewsFeed, TakePhotoForStream}
+import camera.TakePhotoActor._
 import camera.models.NewsImage
 import camera.repos.NewsImagesRepository
 import com.google.inject.{Inject, Singleton}
@@ -31,6 +31,12 @@ object TakePhotoActor {
 
   case class StartSchedulingPhotos()
 
+  case class PhotoTakenFailedException(message: String = "", cause: Throwable = null)
+    extends Exception(message, cause)
+
+  case class NoCameraException(message: String = "", cause: Throwable = null)
+    extends Exception(message, cause)
+
 }
 
 @Singleton
@@ -40,7 +46,7 @@ class TakePhotoActor @Inject()(
                                 newsReposity: NewsRepository,
                                 newsImagesRepository: NewsImagesRepository,
                                 websocketService: WebsocketService
-                              )(implicit ec:ExecutionContext) extends Actor {
+                              )(implicit ec: ExecutionContext) extends Actor {
   def receive = idle
 
   def available: Receive = {
@@ -66,26 +72,31 @@ class TakePhotoActor @Inject()(
   private def takePhotoForNewsFeed: Future[Unit] = {
     val fileName = s"${UUID.randomUUID().toString}.jpg"
     Logger.info(s"Taking photo with name $fileName")
-    Future(takePhoto(fileName))
-      .flatMap(_=>{
-        Logger.info(s"Insert Image ${NewsImage(fileName)}")
+    takePhoto(fileName)
+      .flatMap(_ => {
         newsImagesRepository.insertAll(List(NewsImage(fileName))).map(_.head)
       })
-      .flatMap(imageId => {
-        val news = News(1, NewsType.IMAGE, referenceId = imageId)
-        Logger.info(s"Inserted image with news: $news")
-        newsReposity.insert(News(1, NewsType.IMAGE, referenceId = imageId))
-      })
+      .flatMap(imageId => newsReposity.insert(News(1, NewsType.IMAGE, referenceId = imageId)))
       .map(newsIds => {
-        Logger.info(s"Notify newsId $newsIds ")
         websocketService.notify(Seq(newsIds))
+        ():Unit
+      })
+      .recover({
+        case e: PhotoTakenFailedException => {
+          Logger.warn(s"Eror occured while taking photo: ${e.toString}")
+          (): Unit
+        }
+        case _: NoCameraException => ()
       })
   }
 
-  private def takePhoto(fileName: String): Option[File] = {
-    piCamera.flatMap(camera =>
-      Option(camera.takeStill(fileName,1024,768))
-    )
+  private def takePhoto(fileName: String): Future[File] = {
+    piCamera.map(camera =>
+      Option(camera.takeStill(fileName, 1024, 768)) match {
+        case Some(file) => Future.successful(file)
+        case None => Future.failed(PhotoTakenFailedException("Photo is null!"))
+      }
+    ).getOrElse(Future.failed(NoCameraException("No camera attached")))
   }
 
   private def takeBufferedImageAndPushToClients: Unit = {
