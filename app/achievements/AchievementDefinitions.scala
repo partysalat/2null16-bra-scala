@@ -164,14 +164,14 @@ object AchievementDefinitions {
       Achievement(
         "Halbzeit",
         "150. Bier bestellt",
-        "/internal/assets/achievements/halbzeit.jpg"
+        "/internal/assets/achievements/halbzeit.png"
       ),
       List((BEER,ALL) countEquals 150)
     ),AchievementConstraints(
       Achievement(
         "This is Sparta!",
         "300. Bier bestellt",
-        "/internal/assets/achievements/thisissparta.jpg"
+        "/internal/assets/achievements/thisissparta.png"
       ),
       List((BEER,ALL) countEquals 300)
     ),
