@@ -124,6 +124,14 @@ object AchievementDefinitions {
       ),
       List((SHOT, AT_ONCE) countHigherOrEqualThan 10)
     ),
+    AchievementConstraints(
+      Achievement(
+        "'ne Runde für alle!",
+        "Mindestens 20 Shots auf einmal bestellt",
+        "/internal/assets/achievements/nerundefueralle.jpg"
+      ),
+      List((SHOT, AT_ONCE) countHigherOrEqualThan 20)
+    ),
     //Die nächste Runde geht auf mich
     //'ne Runde für alle!
 
