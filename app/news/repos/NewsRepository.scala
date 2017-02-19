@@ -20,7 +20,7 @@ class NewsRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPro
 
   import driver.api._
 
-  val PAGE_SIZE = 10
+  val PAGE_SIZE = 20
 
   def insert(item: News): Future[Int] = db.run {
     newsInc += item
