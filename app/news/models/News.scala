@@ -50,24 +50,29 @@ object UserNews {
 case class NewsWithItems(news:News,user:Option[User], drink:Option[Drink]=None, achievement:Option[Achievement]= None, image:Option[NewsImage]=None)
 object NewsWithItems {
   implicit val newsWithItemsFormat: Reads[NewsWithItems] = Json.reads[NewsWithItems]
-  implicit val newsWithItemsWrites: Writes[NewsWithItems] = (
-    JsPath.write[News] and
-      (JsPath \ "user").write[Option[User]] and
-      (JsPath \ "drink").write[Option[Drink]] and
-      (JsPath \ "achievement").write[Option[Achievement]] and
-      (JsPath \ "image").write[Option[NewsImage]]
-    )(unlift(NewsWithItems.unapply))
-  /*implicit val newsWithItemsWrites: Writes[NewsWithItems] = Writes[NewsWithItems] { item =>
+//  implicit val newsWithItemsWrites: Writes[NewsWithItems] = (
+//    JsPath.write[News] and
+//      (JsPath \ "user").write[Option[User]] and
+//      (JsPath \ "drink").write[Option[Drink]] and
+//      (JsPath \ "achievement").write[Option[Achievement]] and
+//      (JsPath \ "image").write[Option[NewsImage]]
+//    )(unlift(NewsWithItems.unapply))
+  implicit val newsWithItemsWrites: Writes[NewsWithItems] = Writes[NewsWithItems] { item =>
 
   Json.obj(
     "userId"->item.news.userId,
     "type"->item.news.`type`,
     "cardinality"->item.news.cardinality,
+    "referenceId"->item.news.referenceId,
+    "createdAt"->item.news.createdAt,
+    "updatedAt"->item.news.updatedAt,
+    "id"->item.news.id,
     "user"->item.user,
-    "achievement"->item.achievement
+    "achievement"->item.achievement,
+    "image"->item.image
   )
 
-  }*/
+  }
 }
 
 case class NewsResponse(news:List[NewsWithItems])

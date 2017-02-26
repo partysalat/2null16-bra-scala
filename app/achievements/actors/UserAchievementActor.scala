@@ -122,7 +122,7 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats,statsForAll:NewsSta
     initCounter(countProperties(COCKTAIL)(ALL), statsForAll.cocktailCount.getOrElse(0))
     initCounter(countProperties(SHOT)(ALL), statsForAll.shotCount.getOrElse(0))
     initCounter(countProperties(SOFTDRINK)(ALL), statsForAll.softdrinkCount.getOrElse(0))
-    initCounter(countProperties(CUSTOM)(AT_ONCE), 0)
+    initCounter(countProperties(CUSTOM)(ALL), 0)
 
     AchievementDrinkType.values.foreach(drinkType=>initCounter(countProperties(drinkType)(AT_ONCE), 0))
 
