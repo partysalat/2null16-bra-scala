@@ -10,7 +10,7 @@ import scala.concurrent.ExecutionContext
 
 
 @Singleton
-class CameraController @Inject()(val system: ActorSystem, @Named("take-photo-actor") val takePhotoActor: ActorRef)(implicit exec: ExecutionContext) extends Controller {
+class CameraController @Inject()(val system: ActorSystem, @Named("takePhotoActor") val takePhotoActor: ActorRef)(implicit exec: ExecutionContext) extends Controller {
   def takePhoto = Action {
     takePhotoActor ! TakePhotoForNewsFeed()
     Ok("Photo shoot!")

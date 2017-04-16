@@ -11,11 +11,11 @@ import scala.concurrent.duration._
 
 class PhotoScheduler @Inject() (
                                  val system: ActorSystem,
-                                 @Named("take-photo-actor") val schedulerActor: ActorRef,
+                                 @Named("takePhotoActor") val schedulerActor: ActorRef,
+                                 @Named("streamTimeout") interval:Int,
                                  config:Config
                                )(implicit ec: ExecutionContext)
 {
-  val interval: Int = config.getInt("camera.streamTimeout")
   system.scheduler.schedule(
     0.microseconds, interval.milliseconds, schedulerActor, TakePhotoForStream())
 }

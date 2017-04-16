@@ -41,7 +41,6 @@ object TakePhotoActor {
 
 @Singleton
 class TakePhotoActor @Inject()(
-                                @Named("streamFileName") streamFileName: String,
                                 piCamera: Option[RPiCamera],
                                 newsReposity: NewsRepository,
                                 newsImagesRepository: NewsImagesRepository,

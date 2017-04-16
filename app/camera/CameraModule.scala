@@ -10,7 +10,7 @@ import play.api.libs.concurrent.AkkaGuiceSupport
 class CameraModule extends AbstractModule with AkkaGuiceSupport{
 
   protected def configure: Unit = {
-    bindActor[TakePhotoActor]("take-photo-actor")
+    bindActor[TakePhotoActor]("takePhotoActor")
     bind(classOf[PhotoScheduler]).asEagerSingleton()
   }
 
@@ -38,6 +38,11 @@ class CameraModule extends AbstractModule with AkkaGuiceSupport{
   @Named("streamFileName")
   def getStreamFileName(config:Config):String = {
     config.getString("camera.filename")
+  }
+ @Provides
+  @Named("streamTimeout")
+  def getStreamInterval(config:Config):Int = {
+    config.getInt("camera.streamTimeout")
   }
 
 }
