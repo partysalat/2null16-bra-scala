@@ -11,7 +11,7 @@ import play.api.mvc._
 
 @Singleton
 class WebsocketController @Inject()(
-                                     @Named("websocketSystem")implicit val system: ActorSystem,
+                                     implicit val system: ActorSystem,
                                      val manager: WebsocketManager,
                                      implicit val materializer: Materializer) {
 

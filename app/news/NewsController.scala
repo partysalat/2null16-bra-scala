@@ -17,8 +17,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 
 @Singleton
-class NewsController @Inject()(@Named("websocketSystem") websocketActorSystem: ActorSystem,
-                               newsRepository: NewsRepository,
+class NewsController @Inject()(newsRepository: NewsRepository,
                                achievementService: AchievementService,
                                websocketService: WebsocketService)
                               (implicit exec: ExecutionContext) extends Controller {

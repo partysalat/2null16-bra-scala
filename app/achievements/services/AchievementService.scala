@@ -19,7 +19,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class AchievementService @Inject()(
-                                    @Named("userAchievementSystem") system: ActorSystem,
+                                    system: ActorSystem,
                                     newsRepository: NewsRepository,
                                     drinksRepository: DrinksRepository,
                                     achievementsRepository: AchievementsRepository,

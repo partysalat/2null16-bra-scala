@@ -8,9 +8,4 @@ class WebsocketModule extends AbstractModule {
 
   protected def configure: Unit = {
   }
-  @Provides
-  @Singleton
-  @Named("websocketSystem")
-  def websocketSystem(): ActorSystem = ActorSystem("websocketSystemMmmm")
-
 }
