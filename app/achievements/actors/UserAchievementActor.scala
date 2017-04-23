@@ -18,7 +18,7 @@ object UserAchievementActor {
   }
 
   case class ProcessDrinkNews(news: News)
-
+  case class InitializationDone()
 }
 
 
@@ -138,6 +138,6 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats,statsForAll:NewsSta
 
   }
 
-  case class InitializationDone()
+
 
 }
