@@ -2,6 +2,7 @@ package websocket
 
 import akka.actor.ActorRef
 import com.google.inject.{Inject, Singleton}
+import websocket.WebsocketActor.Notification
 
 import scala.collection.mutable
 import scala.concurrent.{ExecutionContext, Future}
@@ -17,7 +18,7 @@ class WebsocketManager @Inject()()
   def unregister(actor:ActorRef):Unit = {
     actorList.remove(actor.path.toString)
   }
-  def broadcast(msg:AnyRef) ={
+  def broadcast(msg:Notification) ={
     actorList.foreach {
       case (_,actor)=>actor !msg
     }

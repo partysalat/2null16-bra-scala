@@ -7,9 +7,10 @@ import play.api.libs.json.Json
 
 object WebsocketActor {
   def props(manager:WebsocketManager,out: ActorRef) = Props(new WebsocketActor(manager,out)).withDispatcher("websocket-dispatcher")
-  case class NotifyNews(newsWithItems:List[NewsWithItems])
-  case class NotifyNewsRemove(newsId:Int)
-  case class NotifyReloadImage(base64Image:String)
+  sealed trait Notification
+  case class NotifyNews(newsWithItems:List[NewsWithItems]) extends Notification
+  case class NotifyNewsRemove(newsId:Int) extends Notification
+  case class NotifyReloadImage(base64Image:String) extends Notification
 }
 
 class WebsocketActor(manager: WebsocketManager,out: ActorRef) extends Actor {
