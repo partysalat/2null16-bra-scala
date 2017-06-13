@@ -7,10 +7,9 @@ import achievements.actors.UserAchievementActor.ProcessDrinkNews
 import achievements.repos.AchievementsRepository
 import akka.actor.{ActorNotFound, ActorRef, ActorSystem, PoisonPill}
 import akka.util.Timeout
-import com.google.inject.name.Named
 import com.google.inject.{Inject, Singleton}
 import drinks.repos.DrinksRepository
-import news.models.{News, NewsStats}
+import news.models.News
 import news.repos.NewsRepository
 import play.api.Logger
 import websocket.WebsocketService

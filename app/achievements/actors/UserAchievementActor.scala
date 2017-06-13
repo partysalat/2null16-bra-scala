@@ -1,7 +1,7 @@
 package achievements.actors
 
 import achievements.AchievementDefinitions
-import achievements.models.Achievement
+import achievements.models.{Achievement, AchievementConstraints}
 import achievements.repos.AchievementsRepository
 import akka.actor.{Actor, Props, Stash}
 import drinks.repos.DrinksRepository

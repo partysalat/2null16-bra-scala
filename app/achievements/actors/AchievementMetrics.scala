@@ -3,7 +3,7 @@ package achievements.actors
 import achievements.actors.AchievementComparator.AchievementComparator
 import achievements.actors.AchievementCounterType.AchievementCounterType
 import achievements.actors.AchievementDrinkType.AchievementDrinkType
-import achievements.models.Achievement
+import achievements.models.{Achievement, AchievementConstraints}
 import drinks.models.DrinkType.DrinkType
 import play.api.Logger
 
@@ -85,11 +85,6 @@ case class AchievementMetrics(
   }
 }
 
-case class AchievementConstraints(
-                                   achievement: Achievement,
-                                   props: List[String],
-                                   var unlocked: Boolean = false
-                                 )
 
 
 object AchievementDrinkType extends Enumeration {

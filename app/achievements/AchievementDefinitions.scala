@@ -1,8 +1,7 @@
 package achievements
 
-import achievements.actors.AchievementConstraints
 import achievements.actors.Property
-import achievements.models.Achievement
+import achievements.models.{Achievement, AchievementConstraints}
 
 object AchievementDefinitions {
 

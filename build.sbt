@@ -11,7 +11,8 @@ libraryDependencies ++= Seq(
   ws,
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test,
   "org.xerial" % "sqlite-jdbc" % "3.16.1",
-  "com.brsanthu" % "migbase64" % "2.2"
+  "com.brsanthu" % "migbase64" % "2.2",
+  "com.enragedginger" %% "akka-quartz-scheduler" % "1.6.0-akka-2.4.x"
 )
 
 libraryDependencies ++= Seq(

@@ -1,5 +1,6 @@
 package achievements.models
 
+import achievements.actors.AchievementDrinkType.AchievementDrinkType
 import org.joda.time.DateTime
 import play.api.libs.json._
 import users.models.User
@@ -24,3 +25,14 @@ object AchievementsResponse {
   implicit val achievementsResponseFormat: Format[AchievementsResponse] = Json.format[AchievementsResponse]
 }
 
+case class AchievementConstraints(
+                                   achievement: Achievement,
+                                   props: List[String],
+                                   var unlocked: Boolean = false
+                                 )
+case class TimingAchievementConstraints(
+                                         achievement: Achievement,
+                                         pattern:String,
+                                         drinkType: AchievementDrinkType,
+                                         var unlocked: Boolean = false
+                                 )
