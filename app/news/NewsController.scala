@@ -3,7 +3,6 @@ package news
 import javax.inject._
 
 import achievements.services.AchievementService
-import akka.actor.ActorSystem
 import drinks.models.Drink
 import news.models._
 import news.repos.NewsRepository

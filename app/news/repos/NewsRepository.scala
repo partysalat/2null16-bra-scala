@@ -154,7 +154,7 @@ class NewsRepository @Inject()(
   def emptyTable = db.run {
     news.delete
   }
-  def getLatestUserWithType(drinkType: DrinkType, date: DateTime) =
+  def getLatestUserWithType(drinkType: DrinkType, date: DateTime):Future[Seq[Option[User]]] =
     db.run {
       val drinkQuery = news.filter(_.newsType === NewsType.DRINK).filter(_.createdAt <= date)
       val joinQuery = for {
@@ -163,7 +163,17 @@ class NewsRepository @Inject()(
 
       joinQuery
       .sortBy(_._1.createdAt.desc)
-      .result.head
+      .result
+      .map {
+        resultlist =>
+          resultlist
+            .groupBy(_._1.createdAt)
+            .toList
+            .sortBy(_._1.getMillis())
+            .last._2
+
+            .map(_._2)
+      }
 //    val drinkQuery = news.filter(_.newsType === NewsType.DRINK)
 //    val joinQuery = for {
 //      ((newsItem, user), drink) <- drinkQuery joinLeft users on (_.userId === _.id) joinLeft drinks on (_._1.referenceId === _.id)
