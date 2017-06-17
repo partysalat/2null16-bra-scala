@@ -1,10 +1,13 @@
 package achievements.actors
 
 import achievements.actors.AchievementDrinkType.AchievementDrinkType
+import achievements.models.TimingAchievementConstraints
 import achievements.repos.AchievementsRepository
 import akka.actor.{Actor, Props, Stash}
+import com.google.inject.Inject
 import drinks.repos.DrinksRepository
 import news.repos.NewsRepository
+import play.api.Logger
 import websocket.WebsocketService
 
 import scala.concurrent.ExecutionContext
@@ -22,11 +25,11 @@ object TimingAchievementActor {
                                  websocketService))
   }
 
-  case class ProcessTimingAchievement(drinkType: AchievementDrinkType)
+  case class ProcessTimingAchievement(timingAchievementConstraint:TimingAchievementConstraints)
 
 }
 
-class TimingAchievementActor(
+class TimingAchievementActor @Inject()(
     newsRepository: NewsRepository,
     drinksRepository: DrinksRepository,
     achievementsRepository: AchievementsRepository,
@@ -35,13 +38,14 @@ class TimingAchievementActor(
     with Stash {
 
   import TimingAchievementActor._
+  val logger = Logger(this.getClass)
 
   def receive = initialReceive
 
   def initialReceive: Receive = normalReceive
 
   def normalReceive: Receive = {
-    case ProcessTimingAchievement(drinkType) => ()
+    case ProcessTimingAchievement(drinkType) => logger.info(s"Processing fooo ${drinkType.toString}")
     case _ => ()
   }
 
