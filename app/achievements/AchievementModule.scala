@@ -1,9 +1,10 @@
 package achievements
 
 import achievements.actors.TimingAchievementActor
-import akka.actor.ActorSystem
+import akka.actor.{ActorRef, ActorSystem}
+import com.google.inject.name.Named
 import com.google.inject.{AbstractModule, Provides, Singleton}
-import com.typesafe.akka.extension.quartz.QuartzSchedulerExtension
+import com.markatta.akron.CronTab
 import play.api.libs.concurrent.AkkaGuiceSupport
 
 class AchievementModule extends AbstractModule with AkkaGuiceSupport{
@@ -15,8 +16,9 @@ class AchievementModule extends AbstractModule with AkkaGuiceSupport{
 
   @Provides
   @Singleton
-  def getScheduler(system: ActorSystem): QuartzSchedulerExtension = {
-   QuartzSchedulerExtension(system)
+  @Named("crontab")
+  def getScheduler(system: ActorSystem): ActorRef = {
+   system.actorOf(CronTab.props, "crontab")
   }
 
 }
