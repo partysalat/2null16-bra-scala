@@ -1,49 +1,37 @@
 package achievements.actors
 
+
+import java.time.LocalDateTime
+
 import achievements.models.TimingAchievementConstraints
-import achievements.repos.AchievementsRepository
-import akka.actor.{Actor, Props, Stash}
+import achievements.services.AchievementService
+import akka.actor.Actor
 import com.google.inject.Inject
-import drinks.repos.DrinksRepository
 import news.repos.NewsRepository
 import play.api.Logger
-import websocket.WebsocketService
 
 import scala.concurrent.ExecutionContext
-
-object TimingAchievementActor {
-  def props(newsRepository: NewsRepository,
-            drinksRepository: DrinksRepository,
-            achievementsRepository: AchievementsRepository,
-            websocketService: WebsocketService)(
-      implicit executionContext: ExecutionContext) = {
-    Props(
-      new TimingAchievementActor(newsRepository,
-                                 drinksRepository,
-                                 achievementsRepository,
-                                 websocketService))
-  }
-
+object TimingAchievementActor{
   case class ProcessTimingAchievement(
-      timingAchievementConstraint: TimingAchievementConstraints)
+                                       timingAchievementConstraint: TimingAchievementConstraints)
 
 }
 
 class TimingAchievementActor @Inject()(
     newsRepository: NewsRepository,
-    drinksRepository: DrinksRepository,
-    achievementsRepository: AchievementsRepository,
-    websocketService: WebsocketService)(implicit ec: ExecutionContext)
+    achievementService: AchievementService)(implicit ec: ExecutionContext)
     extends Actor {
-
-  import TimingAchievementActor._
+  import achievements.actors.TimingAchievementActor.ProcessTimingAchievement
   val logger = Logger(this.getClass)
 
   def receive = normalReceive
 
   def normalReceive: Receive = {
-    case ProcessTimingAchievement(drinkType) =>
-      logger.info(s"Processing fooo ${drinkType.toString}")
+    case ProcessTimingAchievement(timingAchievementConstraints) =>
+      logger.info(s"Processing timing achievement ${timingAchievementConstraints.toString}")
+      val now = LocalDateTime.now()
+      newsRepository.getDrinkNews
+//      timingAchievementConstraints.drinkType
     case _ => ()
   }
 

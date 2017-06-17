@@ -1,20 +1,34 @@
 package achievements.actors
 
 import achievements.AchievementDefinitions
-import achievements.models.{Achievement, AchievementConstraints}
+import achievements.models.AchievementConstraints
 import achievements.repos.AchievementsRepository
+import achievements.services.AchievementService
 import akka.actor.{Actor, Props, Stash}
 import drinks.repos.DrinksRepository
 import news.models.{News, NewsStats, NewsType}
 import news.repos.NewsRepository
 import play.api.Logger
-import websocket.WebsocketService
 
 import scala.concurrent.{ExecutionContext, Future}
 
 object UserAchievementActor {
-  def props(userId: Int, newsStats: NewsStats, statsForAll: NewsStats, newsRepository: NewsRepository, drinksRepository: DrinksRepository, achievementsRepository: AchievementsRepository, websocketService: WebsocketService)(implicit executionContext: ExecutionContext) = {
-    Props(new UserAchievementActor(userId, newsStats, statsForAll, newsRepository, drinksRepository, achievementsRepository, websocketService))
+  def props(userId: Int,
+            newsStats: NewsStats,
+            statsForAll: NewsStats,
+            newsRepository: NewsRepository,
+            drinksRepository: DrinksRepository,
+            achievementsRepository: AchievementsRepository,
+            achievementService: AchievementService)(
+      implicit executionContext: ExecutionContext) = {
+    Props(
+      new UserAchievementActor(userId,
+                               newsStats,
+                               statsForAll,
+                               newsRepository,
+                               drinksRepository,
+                               achievementsRepository,
+                               achievementService))
   }
 
   case class ProcessDrinkNews(news: News)
@@ -23,9 +37,16 @@ object UserAchievementActor {
 
 }
 
-
-class UserAchievementActor(userId: Int, newsStats: NewsStats, statsForAll: NewsStats, newsRepository: NewsRepository, drinksRepository: DrinksRepository, achievementsRepository: AchievementsRepository, websocketService: WebsocketService)
-                          (implicit ec: ExecutionContext) extends Actor with Stash {
+class UserAchievementActor(
+    userId: Int,
+    newsStats: NewsStats,
+    statsForAll: NewsStats,
+    newsRepository: NewsRepository,
+    drinksRepository: DrinksRepository,
+    achievementsRepository: AchievementsRepository,
+    achievementService: AchievementService)(implicit ec: ExecutionContext)
+    extends Actor
+    with Stash {
 
   import UserAchievementActor._
 
@@ -51,7 +72,8 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats, statsForAll: NewsS
   }
 
   def normalReceive: Receive = {
-    case ProcessDrinkNews(news) if news.userId.contains(userId) && news.`type` == NewsType.DRINK =>
+    case ProcessDrinkNews(news)
+        if news.userId.contains(userId) && news.`type` == NewsType.DRINK =>
       Logger.debug(s"actor $userId received news $news")
       Logger.info(s"User $userId has drink with id ${news.referenceId}")
 
@@ -64,18 +86,15 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats, statsForAll: NewsS
     case _ => ()
   }
 
-  def addAchievementsToUser(unlockedAchievements: List[AchievementConstraints]) = {
-    Logger.info(s"User $userId has unlocked achievements ${unlockedAchievements.toString()}")
+  def addAchievementsToUser(
+      unlockedAchievements: List[AchievementConstraints]) = {
+    Logger.info(
+      s"User $userId has unlocked achievements ${unlockedAchievements.toString()}")
 
     if (unlockedAchievements.nonEmpty) {
-      achievementsRepository
-        .getByNames(unlockedAchievements.map(_.achievement.name))
-        .flatMap {
-          achievements: List[Achievement] => {
-            val achievementNewsList = achievements.map(achievement => News(1, NewsType.ACHIEVEMENT, userId = Some(userId), referenceId = achievement.id.get))
-            newsRepository.insertAll(achievementNewsList)
-          }
-        }.map(websocketService.notify)
+      achievementService.unlockAchievements(
+        userId,
+        unlockedAchievements.map(_.achievement))
     } else {
       Future.successful(())
     }
@@ -86,11 +105,20 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats, statsForAll: NewsS
     import AchievementCounterType._
     import AchievementDrinkType._
     import Property._
-    achievementMetrics.addValues(countProperties(DRINK_COUNT)(ALL).keySet.toList, news.cardinality)
-    drinksRepository.getById(news.referenceId)
+    achievementMetrics.addValues(
+      countProperties(DRINK_COUNT)(ALL).keySet.toList,
+      news.cardinality)
+    drinksRepository
+      .getById(news.referenceId)
       .map { drink =>
-        achievementMetrics.addValues(countProperties(drink.`type`.toCounterType)(ALL).keySet.toList, news.cardinality, Some(drink.name))
-        achievementMetrics.addValues(countProperties(CUSTOM)(ALL).keySet.toList, news.cardinality, Some(drink.name))
+        achievementMetrics.addValues(
+          countProperties(drink.`type`.toCounterType)(ALL).keySet.toList,
+          news.cardinality,
+          Some(drink.name))
+        achievementMetrics.addValues(
+          countProperties(CUSTOM)(ALL).keySet.toList,
+          news.cardinality,
+          Some(drink.name))
       }
   }
 
@@ -98,14 +126,29 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats, statsForAll: NewsS
     import AchievementCounterType._
     import AchievementDrinkType._
     import Property._
-    achievementMetrics.addValues(countProperties(DRINK_COUNT)(USER).keySet.toList, news.cardinality)
-    drinksRepository.getById(news.referenceId)
+    achievementMetrics.addValues(
+      countProperties(DRINK_COUNT)(USER).keySet.toList,
+      news.cardinality)
+    drinksRepository
+      .getById(news.referenceId)
       .map { drink =>
-        achievementMetrics.addValues(countProperties(drink.`type`.toCounterType)(USER).keySet.toList, news.cardinality, Some(drink.name))
-        achievementMetrics.setValues(countProperties(drink.`type`.toCounterType)(AT_ONCE).keySet.toList, news.cardinality, Some(drink.name))
+        achievementMetrics.addValues(
+          countProperties(drink.`type`.toCounterType)(USER).keySet.toList,
+          news.cardinality,
+          Some(drink.name))
+        achievementMetrics.setValues(
+          countProperties(drink.`type`.toCounterType)(AT_ONCE).keySet.toList,
+          news.cardinality,
+          Some(drink.name))
 
-        achievementMetrics.addValues(countProperties(CUSTOM)(USER).keySet.toList, news.cardinality, Some(drink.name))
-        achievementMetrics.setValues(countProperties(CUSTOM)(AT_ONCE).keySet.toList, news.cardinality, Some(drink.name))
+        achievementMetrics.addValues(
+          countProperties(CUSTOM)(USER).keySet.toList,
+          news.cardinality,
+          Some(drink.name))
+        achievementMetrics.setValues(
+          countProperties(CUSTOM)(AT_ONCE).keySet.toList,
+          news.cardinality,
+          Some(drink.name))
       }
   }
 
@@ -117,33 +160,42 @@ class UserAchievementActor(userId: Int, newsStats: NewsStats, statsForAll: NewsS
       .map(_.copy())
       .foreach(achievementMetrics.defineAchievement)
 
-    initCounter(countProperties(DRINK_COUNT)(USER), newsStats.drinkCount.getOrElse(0))
+    initCounter(countProperties(DRINK_COUNT)(USER),
+                newsStats.drinkCount.getOrElse(0))
     initCounter(countProperties(BEER)(USER), newsStats.beerCount.getOrElse(0))
-    initCounter(countProperties(COCKTAIL)(USER), newsStats.cocktailCount.getOrElse(0))
+    initCounter(countProperties(COCKTAIL)(USER),
+                newsStats.cocktailCount.getOrElse(0))
     initCounter(countProperties(SHOT)(USER), newsStats.shotCount.getOrElse(0))
-    initCounter(countProperties(SOFTDRINK)(USER), newsStats.softdrinkCount.getOrElse(0))
+    initCounter(countProperties(SOFTDRINK)(USER),
+                newsStats.softdrinkCount.getOrElse(0))
     initCounter(countProperties(CUSTOM)(USER), 0)
 
-    initCounter(countProperties(DRINK_COUNT)(ALL), statsForAll.drinkCount.getOrElse(0))
+    initCounter(countProperties(DRINK_COUNT)(ALL),
+                statsForAll.drinkCount.getOrElse(0))
     initCounter(countProperties(BEER)(ALL), statsForAll.beerCount.getOrElse(0))
-    initCounter(countProperties(COCKTAIL)(ALL), statsForAll.cocktailCount.getOrElse(0))
+    initCounter(countProperties(COCKTAIL)(ALL),
+                statsForAll.cocktailCount.getOrElse(0))
     initCounter(countProperties(SHOT)(ALL), statsForAll.shotCount.getOrElse(0))
-    initCounter(countProperties(SOFTDRINK)(ALL), statsForAll.softdrinkCount.getOrElse(0))
+    initCounter(countProperties(SOFTDRINK)(ALL),
+                statsForAll.softdrinkCount.getOrElse(0))
     initCounter(countProperties(CUSTOM)(ALL), 0)
 
-    AchievementDrinkType.values.foreach(drinkType => initCounter(countProperties(drinkType)(AT_ONCE), 0))
+    AchievementDrinkType.values.foreach(drinkType =>
+      initCounter(countProperties(drinkType)(AT_ONCE), 0))
 
-
-    newsRepository.getAchievementsForUser(userId)
+    newsRepository
+      .getAchievementsForUser(userId)
       .map(achievementMetrics.unlockReachedAchievements)
   }
 
-  private def initCounter(properties: mutable.Map[String, Property], value: Int) = {
+  private def initCounter(properties: mutable.Map[String, Property],
+                          value: Int) = {
     properties.foreach {
-      case (_, property) => achievementMetrics.defineProperty(property.copy(initialValue = value, value = value))
+      case (_, property) =>
+        achievementMetrics.defineProperty(
+          property.copy(initialValue = value, value = value))
     }
 
   }
-
 
 }
