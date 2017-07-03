@@ -1,6 +1,6 @@
 package bootstrap
 
-import achievements.AchievementDefinitions
+import achievements.{AchievementDefinitions, AchievementDefinitionsTiming}
 import achievements.models.Achievement
 import achievements.repos.AchievementsRepository
 import com.google.inject.Inject
@@ -93,7 +93,11 @@ object Data {
     User("Julia")
 
   )
-  val achievements: List[Achievement] = AchievementDefinitions.achievements.map(_.achievement)
+  val achievements: List[Achievement] = List(
+    AchievementDefinitions.achievements.map(_.achievement),
+    AchievementDefinitionsTiming.achievements.map(_.achievement)
+  ).flatten
+
   val drinks = List(
     Drink("Radeberger", BEER),
     Drink("Hasseröder", BEER),

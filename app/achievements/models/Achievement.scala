@@ -25,14 +25,18 @@ object AchievementsResponse {
   implicit val achievementsResponseFormat: Format[AchievementsResponse] = Json.format[AchievementsResponse]
 }
 
+trait Constraints{
+
+}
+
 case class AchievementConstraints(
                                    achievement: Achievement,
                                    props: List[String],
                                    var unlocked: Boolean = false
-                                 )
+                                 ) extends Constraints
 case class TimingAchievementConstraints(
                                          achievement: Achievement,
                                          pattern:String,
                                          drinkType: DrinkType,
                                          var unlocked: Boolean = false
-                                 )
+                                 ) extends Constraints
