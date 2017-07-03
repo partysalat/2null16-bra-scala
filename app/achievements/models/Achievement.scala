@@ -1,6 +1,6 @@
 package achievements.models
 
-import achievements.actors.AchievementDrinkType.AchievementDrinkType
+import drinks.models.DrinkType.DrinkType
 import org.joda.time.DateTime
 import play.api.libs.json._
 import users.models.User
@@ -33,6 +33,6 @@ case class AchievementConstraints(
 case class TimingAchievementConstraints(
                                          achievement: Achievement,
                                          pattern:String,
-                                         drinkType: AchievementDrinkType,
+                                         drinkType: DrinkType,
                                          var unlocked: Boolean = false
                                  )

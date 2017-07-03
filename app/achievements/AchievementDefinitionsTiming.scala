@@ -1,6 +1,5 @@
 package achievements
-
-import achievements.actors.AchievementDrinkType._
+import drinks.models.DrinkType._
 import achievements.models.{Achievement, TimingAchievementConstraints}
 
 object AchievementDefinitionsTiming {
@@ -15,8 +14,7 @@ object AchievementDefinitionsTiming {
         "Letztes Bier vor 8 Uhr morgens bestellt",
         "/internal/assets/achievements/moe.png"
       ),
-//      pattern = "0 0 8 1/1 * ? *",
-      pattern = "20 14 * * *",
+      pattern = "0 8 * * *",
       drinkType = BEER
     )
   )

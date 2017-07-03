@@ -1,24 +1,24 @@
 package achievements.actors
 
-
-import java.time.LocalDateTime
-
-import achievements.models.TimingAchievementConstraints
+import achievements.models.{Achievement, TimingAchievementConstraints}
 import achievements.services.AchievementService
 import akka.actor.Actor
 import com.google.inject.Inject
 import news.repos.NewsRepository
+import news.services.NewsService
+import org.joda.time.DateTime
 import play.api.Logger
+import users.models.User
 
-import scala.concurrent.ExecutionContext
-object TimingAchievementActor{
+import scala.concurrent.{ExecutionContext, Future}
+object TimingAchievementActor {
   case class ProcessTimingAchievement(
-                                       timingAchievementConstraint: TimingAchievementConstraints)
+      timingAchievementConstraint: TimingAchievementConstraints)
 
 }
 
 class TimingAchievementActor @Inject()(
-    newsRepository: NewsRepository,
+    newsService: NewsService,
     achievementService: AchievementService)(implicit ec: ExecutionContext)
     extends Actor {
   import achievements.actors.TimingAchievementActor.ProcessTimingAchievement
@@ -28,11 +28,52 @@ class TimingAchievementActor @Inject()(
 
   def normalReceive: Receive = {
     case ProcessTimingAchievement(timingAchievementConstraints) =>
-      logger.info(s"Processing timing achievement ${timingAchievementConstraints.toString}")
-      val now = LocalDateTime.now()
-      newsRepository.getDrinkNews
-//      timingAchievementConstraints.drinkType
+      logger.info(
+        s"Processing timing achievement ${timingAchievementConstraints.toString}")
+      val now = DateTime.now()
+      val currentSender = sender()
+      newsService
+        .getLatestUserWithType(timingAchievementConstraints.drinkType, now)
+        .map(toUsers)
+        .flatMap { users =>
+          haveUsersAchievementReached(users,
+                                      timingAchievementConstraints.achievement)
+        }
+        .map { users =>
+          users.map { user =>
+            achievementService.unlockAchievements(
+              user.id.get,
+              Seq(timingAchievementConstraints.achievement))
+          }
+
+        }
+        .map { _ =>
+          currentSender ! "ACK"
+        }
+
     case _ => ()
+  }
+  def toUsers(usersOpt: Seq[Option[User]]): Seq[User] = {
+    usersOpt
+      .filter(_.isDefined)
+      .map(_.get)
+  }
+  private def haveUsersAchievementReached(
+      users: Seq[User],
+      achievement: Achievement): Future[Seq[User]] = {
+    Future
+      .sequence(users.map(hasAchievementReached(achievement, _)))
+      .map { achievementReached =>
+        achievementReached
+          .filter(!_._2)
+          .map(_._1)
+      }
+  }
+  private def hasAchievementReached(achievement: Achievement, user: User) = {
+    newsService
+      .hasAchievementReached(achievement, user.id.get)
+      .map((user, _))
+
   }
 
 }

@@ -87,7 +87,7 @@ class UserAchievementActor(
   }
 
   def addAchievementsToUser(
-      unlockedAchievements: List[AchievementConstraints]) = {
+      unlockedAchievements: List[AchievementConstraints]): Future[Unit] = {
     Logger.info(
       s"User $userId has unlocked achievements ${unlockedAchievements.toString()}")
 

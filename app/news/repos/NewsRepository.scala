@@ -19,7 +19,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton()
 class NewsRepository @Inject()(
-    protected val dbConfigProvider: DatabaseConfigProvider)(
+    override protected val dbConfigProvider: DatabaseConfigProvider)(
     implicit ec: ExecutionContext)
     extends NewsTable
     with UsersTable
@@ -197,5 +197,15 @@ class NewsRepository @Inject()(
       .sortBy(_._1.createdAt.desc)
       .to[List]
       .result
+  }
+  def hasAchievementReached(achievement:Achievement, userId:Int) = db.run {
+    val query = for {
+      achievementDbEntity <- achievements.filter(_.achievementName === achievement.name)
+      newsDbEntity <- news
+        .filter(_.newsType === NewsType.ACHIEVEMENT)
+        .filter(_.userId === userId)
+        .filter(_.referenceId === achievementDbEntity.id)
+    } yield newsDbEntity
+    query.exists.result
   }
 }
