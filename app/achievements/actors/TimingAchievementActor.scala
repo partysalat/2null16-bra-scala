@@ -4,7 +4,6 @@ import achievements.models.{Achievement, TimingAchievementConstraints}
 import achievements.services.AchievementService
 import akka.actor.Actor
 import com.google.inject.Inject
-import news.repos.NewsRepository
 import news.services.NewsService
 import org.joda.time.DateTime
 import play.api.Logger
@@ -40,6 +39,7 @@ class TimingAchievementActor @Inject()(
                                       timingAchievementConstraints.achievement)
         }
         .map { users =>
+          logger.info(s"users $users unlocked achievement ${timingAchievementConstraints.achievement}")
           users.map { user =>
             achievementService.unlockAchievements(
               user.id.get,
@@ -64,6 +64,7 @@ class TimingAchievementActor @Inject()(
     Future
       .sequence(users.map(hasAchievementReached(achievement, _)))
       .map { achievementReached =>
+        logger.info(s"users reached: $achievementReached")
         achievementReached
           .filter(!_._2)
           .map(_._1)
