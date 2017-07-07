@@ -6,6 +6,7 @@ import achievements.services.AchievementService
 import drinks.models.Drink
 import news.models._
 import news.repos.NewsRepository
+import org.joda.time.DateTime
 import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc._
@@ -38,8 +39,9 @@ class NewsController @Inject()(newsRepository: NewsRepository,
 
   def createDrinkNews = Action.async(parse.json[CreateDrinkNewsDto]) { request =>
     val drinkId = request.body.drink
+    val creationDate = DateTime.now()
     val newsList: List[News] = request.body.users.map(userNews => {
-      News(userNews.cardinality, NewsType.DRINK, userId = Some(userNews.id), referenceId = drinkId)
+      News(userNews.cardinality, NewsType.DRINK, userId = Some(userNews.id), referenceId = drinkId, createdAt = creationDate)
     })
 
     achievementService.notifyAchievements(newsList).flatMap { _ =>

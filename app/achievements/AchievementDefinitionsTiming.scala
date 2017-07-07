@@ -12,9 +12,9 @@ object AchievementDefinitionsTiming {
       Achievement(
         "Der letzte Kunde",
         "Letztes Bier vor 8 Uhr morgens bestellt",
-        "/internal/assets/achievements/moe.png"
+        "/internal/assets/achievements/derletztekunde.png"
       ),
-      pattern = "0 8 * * *",
+      pattern = "18 19 * * *",
       drinkType = BEER
     )
   )
