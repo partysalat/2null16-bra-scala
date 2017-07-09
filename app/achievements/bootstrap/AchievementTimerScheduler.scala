@@ -1,5 +1,6 @@
 package achievements
 
+import achievements.actors.TimingAchievementActor
 import achievements.actors.TimingAchievementActor.ProcessTimingAchievement
 import akka.actor.ActorRef
 import com.google.inject.Inject
@@ -9,7 +10,7 @@ import play.api.Logger
 
 class AchievementTimerScheduler @Inject()(
     @Named("crontab") crontab: ActorRef,
-    @Named("timingAchievementActor") timingAchievementActor: ActorRef
+    @Named(TimingAchievementActor.name) timingAchievementActor: ActorRef
 ) {
   val logger = Logger(this.getClass)
   logger.info("Initializing timeing achievements...")

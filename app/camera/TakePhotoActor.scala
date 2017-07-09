@@ -10,7 +10,6 @@ import camera.TakePhotoActor._
 import camera.models.NewsImage
 import camera.repos.NewsImagesRepository
 import com.google.inject.{Inject, Singleton}
-import com.google.inject.name.Named
 import com.hopding.jrpicam.RPiCamera
 import com.migcomponents.migbase64.Base64
 import news.models.{News, NewsType}
@@ -22,6 +21,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 
 object TakePhotoActor {
+  final val name = "takePhotoActor"
 
   case class TakePhotoForStream()
 

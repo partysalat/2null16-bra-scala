@@ -11,6 +11,7 @@ import users.models.User
 
 import scala.concurrent.{ExecutionContext, Future}
 object TimingAchievementActor {
+  final val name = "timingAchievementActor"
   case class ProcessTimingAchievement(
       timingAchievementConstraint: TimingAchievementConstraints)
 

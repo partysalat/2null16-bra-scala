@@ -11,7 +11,7 @@ class AchievementModule extends AbstractModule with AkkaGuiceSupport{
 
   protected def configure: Unit =  {
     bind(classOf[AchievementTimerScheduler]).asEagerSingleton()
-    bindActor[TimingAchievementActor]("timingAchievementActor")
+    bindActor[TimingAchievementActor](TimingAchievementActor.name)
   }
 
   @Provides
